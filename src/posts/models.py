@@ -1,0 +1,15 @@
+from datetime import datetime
+from sqlalchemy import (JSON, TIMESTAMP, Boolean, Column, ForeignKey, Integer,
+                        String, Table)
+
+from . import Base
+
+
+class Vacancy(Base):
+    __tablename__ = "vacancy"
+
+    id = Column(Integer, primary_key=True)
+    name = Column(String, nullable=False)
+    url = Column(String, nullable=False)
+    is_active: bool = Column(Boolean, default=True, nullable=False)
+    registered_at = Column(TIMESTAMP, default=datetime.utcnow)
