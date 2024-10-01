@@ -11,10 +11,10 @@ from src.posts.models import *
 
 config = context.config
 
-url = Settings().get_database_url()
+db_url = Settings().get_database_url()
 
 config.set_main_option("sqlalchemy.url",
-                       url + '?async_fallback=True')
+                       db_url + '?async_fallback=True')
 
 if config.config_file_name is not None:
     fileConfig(config.config_file_name)

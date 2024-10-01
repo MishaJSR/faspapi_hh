@@ -2,7 +2,8 @@ from datetime import datetime
 from sqlalchemy import (JSON, TIMESTAMP, Boolean, Column, ForeignKey, Integer,
                         String, Table)
 
-from . import Base
+from src.database import Base
+from src.repository.repository import SQLAlchemyRepository
 
 
 class Vacancy(Base):
@@ -13,3 +14,7 @@ class Vacancy(Base):
     url = Column(String, nullable=False)
     is_active: bool = Column(Boolean, default=True, nullable=False)
     registered_at = Column(TIMESTAMP, default=datetime.utcnow)
+
+
+class VacancyRepository(SQLAlchemyRepository):
+    model = Vacancy
