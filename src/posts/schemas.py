@@ -1,8 +1,10 @@
+from typing import Optional
+
 from pydantic import BaseModel
 
 
-class ConstructPost(BaseModel):
+class ConstructVacancy(BaseModel):
     name: str
     url: str
-    is_active: bool
-    registered_at: str
+    is_active: Optional[bool] = True
+    registered_at: Optional[str] = None
