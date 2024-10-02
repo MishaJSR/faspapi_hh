@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-from sqlalchemy import insert, update, delete, and_
+from sqlalchemy import insert, update, delete, and_, select, func
 
 from src.repository.utils import AlchemyDataObject
 from src.repository.utils import async_session_maker_decorator_select
@@ -27,6 +27,11 @@ class AbstractRepository(ABC):
     async def update_fields(self, **kwargs) -> list[AlchemyDataObject]:
         raise NotImplementedError
 
+    @abstractmethod
+    async def get_all_contain_fields(self, **kwargs) -> list[AlchemyDataObject]:
+        raise NotImplementedError
+
+
 
 class SQLAlchemyRepository(AbstractRepository):
     model: None
@@ -41,7 +46,6 @@ class SQLAlchemyRepository(AbstractRepository):
     @async_session_maker_decorator_select
     async def get_one_by_fields(self, **kwargs) -> AlchemyDataObject:
         res_values = list(kwargs.get("result_query").fetchone()._data)
-        return AlchemyDataObject(kwargs.get("data"), res_values)
 
     @async_session_maker_decorator_select
     async def get_all_by_fields(self, **kwargs) -> list[AlchemyDataObject]:
@@ -62,3 +66,12 @@ class SQLAlchemyRepository(AbstractRepository):
         res = await session.execute(stmt)
         await session.commit()
         return res.fetchone()
+
+    async def get_all_contain_fields(self, **kwargs):
+        session = kwargs.get("session")
+        query = select(*[getattr(self.model, field) for field in kwargs.get("data")])
+        for key, value in kwargs.get("field_filter").items():
+            query = query.filter(func.lower(getattr(self.model, key)).contains(value))
+        res = await session.execute(query)
+        res_values = [el._data for el in res.fetchall()]
+        return [AlchemyDataObject(kwargs.get("data"), value) for value in res_values]

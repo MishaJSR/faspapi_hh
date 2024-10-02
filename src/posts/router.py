@@ -14,9 +14,24 @@ router = APIRouter(
     tags=["Posts"]
 )
 
+
 @router.get("/all_posts")
 async def get_last_messages(session: AsyncSession = Depends(get_async_session)):
     res = await VacancyRepository().get_all_by_fields(session=session, data=["url", "is_active"])
+    return res
+
+
+@router.post("/find_post")
+async def get_last_messages(target: str, additions: str = "", session: AsyncSession = Depends(get_async_session)):
+    filed_filter = {
+        "name": target.lower()
+    }
+    if additions:
+        filed_filter["experience"] = additions.lower()
+    res = await VacancyRepository().get_all_contain_fields(session=session,
+                                                           data=["name", "url", "salary", "experience",
+                                                                 "employer", "location"],
+                                                           field_filter=filed_filter)
     return res
 
 
