@@ -24,6 +24,7 @@ async def get_last_messages(session: AsyncSession = Depends(get_async_session)):
 async def start_pooling(key: str, session: AsyncSession = Depends(get_async_session)):
     if key == "private":
         parser_hh = ParserHH()
-        parser_hh.start_parsing()
-        asyncio.create_task(push_to_db(session))
+        is_already_start = parser_hh.start_parsing()
+        if not is_already_start:
+            asyncio.create_task(push_to_db(session))
         return []

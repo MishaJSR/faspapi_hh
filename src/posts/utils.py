@@ -12,7 +12,8 @@ async def push_to_db(session: AsyncSession):
         print("work")
         lst_vacancies = ParserHH().lst_of_vacancies
         for val in lst_vacancies:
-            new_vac = ConstructVacancy(url=val[0], name=val[1],).model_dump()
+            new_vac = ConstructVacancy(url=val[0], name=val[1], salary=val[2], experience=val[3],
+                                       employer=val[4], location=val[5]).model_dump()
             vacancy_filter = {
                 "url": val[0],
                 "name": val[1],

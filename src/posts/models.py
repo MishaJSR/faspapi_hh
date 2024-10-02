@@ -12,6 +12,10 @@ class Vacancy(Base):
     id = Column(Integer, primary_key=True)
     name = Column(String, nullable=False)
     url = Column(String, nullable=False)
+    salary = Column(String, nullable=False)
+    experience = Column(String, nullable=False)
+    employer = Column(String, nullable=False)
+    location = Column(String, nullable=False)
     is_active: bool = Column(Boolean, default=True, nullable=False)
     registered_at = Column(TIMESTAMP, default=datetime.utcnow)
 
