@@ -8,6 +8,9 @@ from alembic import context
 from src.config import Settings
 from src.database import Base, metadata
 from src.posts.models import *
+from src.auth.models import *
+from src.subscriber.models import *
+
 
 config = context.config
 

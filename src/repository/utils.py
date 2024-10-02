@@ -30,12 +30,13 @@ def async_session_maker_decorator_select(func):
             try:
                 for key, value in field_filter.items():
                     query = query.filter(getattr(self_object.model, key) == value)
-            except AttributeError:
+            except AttributeError as e:
+                print(e)
                 raise CustomException(message="Unknown fields in field_filter")
             res = await session.execute(query)
             return await func(self_object, data=data, result_query=res)
         except Exception as e:
-            print("error")
+            print(e)
 
     return wrapper
 
