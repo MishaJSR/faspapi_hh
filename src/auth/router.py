@@ -4,8 +4,6 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from src.auth.models import UserRepository
 from src.auth.schemas import ConstructUser
 from src.database import get_async_session
-from src.posts.models import VacancyRepository
-from src.subscriber.models import SubscriberRepository
 
 router = APIRouter(
     prefix="/user",
@@ -28,16 +26,3 @@ async def get_last_messages(tg_user_id: int, user_tag: str, session: AsyncSessio
                                                                              is_block_bot=False).model_dump())
         return res
 
-
-@router.post("/find_post")
-async def get_last_messages(target: str, additions: str = "", session: AsyncSession = Depends(get_async_session)):
-    filed_filter = {
-        "name": target.lower()
-    }
-    if additions:
-        filed_filter["experience"] = additions.lower()
-    res = await VacancyRepository().get_all_contain_fields(session=session,
-                                                           data=["name", "url", "salary", "experience",
-                                                                 "employer", "location"],
-                                                           field_filter=filed_filter)
-    return res

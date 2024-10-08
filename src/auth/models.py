@@ -1,7 +1,5 @@
 from datetime import datetime
-from sqlalchemy import (JSON, TIMESTAMP, Boolean, Column, ForeignKey, Integer,
-                        String, Table, BigInteger)
-from sqlalchemy.orm import relationship
+from sqlalchemy import (TIMESTAMP, Boolean, Column, Integer, String, BigInteger)
 
 from src.database import Base
 from src.repository.repository import SQLAlchemyRepository

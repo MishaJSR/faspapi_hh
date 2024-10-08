@@ -2,9 +2,6 @@ import asyncio
 import logging
 from threading import Lock
 
-from fastapi import Depends
-from sqlalchemy.ext.asyncio import AsyncSession
-
 from src.database import get_async_session
 from src.posts.models import VacancyRepository
 from src.subscriber.models import SubscriberRepository
@@ -36,24 +33,23 @@ class Reporter(metaclass=ReporterMeta):
         sub_list = []
         async for session in get_async_session():
             sub_list = await self.sub_repo.get_all_by_fields(session=session,
-                                                             data=["sub_tag", "sub_addition", "user_tg_id"])
+                                                             data=["sub_tag", "is_no_exp", "is_remote", "user_tg_id"])
         for sub in sub_list:
-            res = await self.find_post(target=sub.sub_tag, additions=sub.sub_addition)
+            res = await self.find_post(target=sub.sub_tag, is_no_exp=sub.is_no_exp, is_remote=sub.is_remote)
             if res:
                 logging.info(f"Send {len(res)} message matching old")
             else:
                 logging.info("Send no message matching old")
-        pass
 
-    async def find_post(self, target: str, additions: str = ""):
+    async def find_post(self, target: str, is_no_exp: bool, is_remote: bool):
         async for session in get_async_session():
             filed_filter = {
-                "name": target.lower()
+                "name": target,
+                "is_no_exp": is_no_exp,
+                "is_remote": is_remote
             }
-            if additions:
-                filed_filter["experience"] = additions.lower()
-            res = await self.vac_repo.get_all_contain_fields(session=session,
-                                                             data=["name", "url", "salary", "experience",
-                                                                   "employer", "location"],
-                                                             field_filter=filed_filter)
+            res = await self.vac_repo.get_all_by_fields(session=session,
+                                                        data=["name", "url", "salary", "experience",
+                                                              "employer", "location"],
+                                                        field_filter=filed_filter)
             return res

@@ -52,6 +52,8 @@ class ParserHH(metaclass=ParserMeta):
 
             links = []
             for div in div_elements[2:7]:
+                is_no_exp = False
+                is_remote = False
                 vacancy_name = div.find_elements(By.TAG_NAME, 'span')[2].text
                 span_list = div.find_elements(By.TAG_NAME, 'span')
                 div_list_additions = div.find_elements(By.TAG_NAME, 'div')
@@ -67,14 +69,19 @@ class ParserHH(metaclass=ParserMeta):
                         salary = el.text.replace("\u202f", "")
                         break
                 url = div.find_elements(By.TAG_NAME, 'a')[0].get_attribute('href').split("?")[0]
-                links.append([url, vacancy_name, salary, additions, employer, location])
+                if "Без опыта" in additions:
+                    is_no_exp = True
+                if "Можно удаленно" in additions:
+                    is_remote = True
+                links.append([url, vacancy_name, salary, is_no_exp,is_remote, employer, location])
 
             for link in links:
                 if link not in self.lst_of_vacancies:
                     loop = asyncio.new_event_loop()
                     asyncio.set_event_loop(loop)
                     loop.run_until_complete(hh_pusher_to_db(new_vac=link))
-                    loop.run_until_complete(send_first_matches_by_sub(target=link[1], additions=link[3]))
+                    loop.run_until_complete(send_first_matches_by_sub(target=link[1], is_no_exp=link[3],
+                                                                      is_remote=link[4]))
                     loop.close()
                     self.lst_of_vacancies.append(link)
             thread_refresh = threading.Thread(target=self.refresh_browser)

@@ -1,6 +1,4 @@
 import asyncio
-import logging
-import threading
 
 from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -17,7 +15,7 @@ router = APIRouter(
 
 
 @router.post("/subscribe_user")
-async def subscribe_user(user_tg_id: int, target: str, additions: str = "",
+async def subscribe_user(user_tg_id: int, target: str, is_no_exp: bool, is_remote: bool,
                          session: AsyncSession = Depends(get_async_session)):
     sub_repo = SubscriberRepository()
     field_filter = {
@@ -28,19 +26,19 @@ async def subscribe_user(user_tg_id: int, target: str, additions: str = "",
         sub_id = await sub_repo.add_object(session=session,
                                            data=ConstructSubscriber(user_tg_id=user_tg_id,
                                                                     sub_tag=target,
-                                                                    sub_addition=additions).model_dump())
-        asyncio.create_task(send_first_matches_by_vac(target=target, additions=additions))
-        return sub_id
+                                                                    is_no_exp=is_no_exp,
+                                                                    is_remote=is_remote).model_dump())
     else:
         update_filter = {
             "user_tg_id": user_tg_id,
         }
         update_data = {
             "sub_tag": target,
-            "sub_addition": additions,
+            "is_no_exp": is_no_exp,
+            "is_remote": is_remote,
             "user_tg_id": user_tg_id,
         }
         sub_id = await sub_repo.update_fields(session=session, update_data=update_data, update_filter=update_filter)
-        asyncio.create_task(send_first_matches_by_vac(target=target, additions=additions))
-        return sub_id
+    asyncio.create_task(send_first_matches_by_vac(target=target, is_no_exp=is_no_exp, is_remote=is_remote))
+    return sub_id
 

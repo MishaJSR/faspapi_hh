@@ -2,7 +2,6 @@ import logging
 
 from sqlalchemy import select, desc
 
-from src.database import get_async_session
 from src.repository.exceptions import CustomException
 
 

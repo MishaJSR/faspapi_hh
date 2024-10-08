@@ -1,6 +1,5 @@
 from datetime import datetime
-from sqlalchemy import (JSON, TIMESTAMP, Boolean, Column, ForeignKey, Integer,
-                        String, Table)
+from sqlalchemy import (TIMESTAMP, Boolean, Column, Integer, String)
 
 from src.database import Base
 from src.repository.repository import SQLAlchemyRepository
@@ -13,7 +12,8 @@ class Vacancy(Base):
     name = Column(String, nullable=False)
     url = Column(String, nullable=False)
     salary = Column(String, nullable=False)
-    experience = Column(String, nullable=False)
+    is_no_exp = Column(Boolean, nullable=False)
+    is_remote = Column(Boolean, nullable=False)
     employer = Column(String, nullable=False)
     location = Column(String, nullable=False)
     is_active: bool = Column(Boolean, default=True, nullable=False)
