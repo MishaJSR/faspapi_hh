@@ -45,7 +45,8 @@ class SQLAlchemyRepository(AbstractRepository):
 
     @async_session_maker_decorator_select
     async def get_one_by_fields(self, **kwargs) -> AlchemyDataObject:
-        res_values = list(kwargs.get("result_query").fetchone()._data)
+        res_value = list(kwargs.get("result_query").fetchone())
+        return AlchemyDataObject(kwargs.get("data"), res_value)
 
     @async_session_maker_decorator_select
     async def get_all_by_fields(self, **kwargs) -> list[AlchemyDataObject]:
@@ -59,13 +60,14 @@ class SQLAlchemyRepository(AbstractRepository):
         await session.execute(stmt)
         await session.commit()
 
-    async def update_fields(self, **kwargs):
+    async def update_fields(self, **kwargs) -> list[AlchemyDataObject]:
         conditions = [getattr(self.model, key) == value for key, value in kwargs.get("update_filter").items()]
         session = kwargs.get("session")
-        stmt = update(self.model).where(and_(*conditions)).values(**kwargs.get("update_data")).returning(self.model.id)
+        stmt = update(self.model).where(and_(*conditions)).values(**kwargs.get("update_data")).returning(self.model)
         res = await session.execute(stmt)
         await session.commit()
-        return res.fetchone()
+        res_values = [el._data for el in res.fetchall()]
+        return [AlchemyDataObject(kwargs.get("update_data"), value) for value in res_values]
 
     async def get_all_contain_fields(self, **kwargs):
         session = kwargs.get("session")

@@ -1,11 +1,15 @@
+import asyncio
 import logging
 import threading
 import time
 import random
-from threading import Lock, Thread
+from threading import Lock
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
+
+from src.posts.utils import hh_pusher_to_db
+from src.subscriber.utils import send_first_matches_by_sub
 
 
 class ParserMeta(type):
@@ -33,16 +37,15 @@ class ParserHH(metaclass=ParserMeta):
         self.lst_of_vacancies = []
         self.thread_parsing = threading.Thread(target=self.start_pooling)
 
-    def start_parsing(self) -> bool:
+    def start_parsing(self):
         if not self.thread_parsing.is_alive():
             self.thread_parsing.start()
-            return True
-        return False
 
     def start_pooling(self):
         logging.info("Start Parser HH")
         self.brouser.get(self.url)
         time.sleep(10)
+        counter = 0
         while True:
             logging.info("Start circle Parser HH")
             div_elements = self.brouser.find_elements(By.XPATH, '//div[contains(@class, "vacancy-info")]')
@@ -66,9 +69,13 @@ class ParserHH(metaclass=ParserMeta):
                 url = div.find_elements(By.TAG_NAME, 'a')[0].get_attribute('href').split("?")[0]
                 links.append([url, vacancy_name, salary, additions, employer, location])
 
-            # Для примера, выводим найденные ссылки
             for link in links:
                 if link not in self.lst_of_vacancies:
+                    loop = asyncio.new_event_loop()
+                    asyncio.set_event_loop(loop)
+                    loop.run_until_complete(hh_pusher_to_db(new_vac=link))
+                    loop.run_until_complete(send_first_matches_by_sub(target=link[1], additions=link[3]))
+                    loop.close()
                     self.lst_of_vacancies.append(link)
             thread_refresh = threading.Thread(target=self.refresh_browser)
             self.is_run_refresh = True
@@ -80,6 +87,11 @@ class ParserHH(metaclass=ParserMeta):
                 self.brouser = webdriver.Chrome(options=self.chrome_options)
                 self.brouser.get(self.url)
             logging.info("End circle Parser HH")
+            if counter == 100:
+                counter = 0
+                self.lst_of_vacancies = []
+                logging.info("HH Clear vac list")
+            counter += 1
 
     def refresh_browser(self):
         while self.is_run_refresh:

@@ -1,7 +1,10 @@
 from typing import Optional, Union
 
-from pydantic import BaseModel
+from pydantic import BaseModel, conint
 
 
-class ConstructUserId(BaseModel):
-    user_id: int
+class ConstructUser(BaseModel):
+    tg_user_id: conint(strict=True, gt=0)
+    user_tag: Optional[str] = "@"
+    is_block_bot: Optional[bool] = False
+

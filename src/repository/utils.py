@@ -1,3 +1,5 @@
+import logging
+
 from sqlalchemy import select, desc
 
 from src.database import get_async_session
@@ -31,12 +33,12 @@ def async_session_maker_decorator_select(func):
                 for key, value in field_filter.items():
                     query = query.filter(getattr(self_object.model, key) == value)
             except AttributeError as e:
-                print(e)
+                logging.info(e)
                 raise CustomException(message="Unknown fields in field_filter")
             res = await session.execute(query)
             return await func(self_object, data=data, result_query=res)
         except Exception as e:
-            print(e)
+            logging.info(e)
 
     return wrapper
 

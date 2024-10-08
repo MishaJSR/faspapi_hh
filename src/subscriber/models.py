@@ -14,7 +14,7 @@ class Subscriber(Base):
     id = Column(Integer, primary_key=True)
     sub_tag = Column(String, nullable=False)
     sub_addition = Column(String, nullable=False)
-    user_id = Column(Integer, ForeignKey('user.id'))
+    user_tg_id = Column(Integer, ForeignKey('user.tg_user_id'))
 
 
 class SubscriberRepository(SQLAlchemyRepository):
