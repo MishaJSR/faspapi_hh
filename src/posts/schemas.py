@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import Optional, Union
 
 from pydantic import BaseModel
@@ -11,4 +12,3 @@ class ConstructVacancy(BaseModel):
     employer: str
     location: str
     is_active: Optional[bool] = True
-    registered_at: Optional[str] = None

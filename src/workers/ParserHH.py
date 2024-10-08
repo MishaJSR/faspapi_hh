@@ -1,3 +1,4 @@
+import logging
 import threading
 import time
 import random
@@ -35,13 +36,15 @@ class ParserHH(metaclass=ParserMeta):
     def start_parsing(self) -> bool:
         if not self.thread_parsing.is_alive():
             self.thread_parsing.start()
-            return False
-        return True
+            return True
+        return False
 
     def start_pooling(self):
+        logging.info("Start Parser HH")
         self.brouser.get(self.url)
         time.sleep(10)
         while True:
+            logging.info("Start circle Parser HH")
             div_elements = self.brouser.find_elements(By.XPATH, '//div[contains(@class, "vacancy-info")]')
 
             links = []
@@ -76,8 +79,7 @@ class ParserHH(metaclass=ParserMeta):
                 self.brouser.close()
                 self.brouser = webdriver.Chrome(options=self.chrome_options)
                 self.brouser.get(self.url)
-            time.sleep(random.randint(5, 8))
-            print("working")
+            logging.info("End circle Parser HH")
 
     def refresh_browser(self):
         while self.is_run_refresh:

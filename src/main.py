@@ -1,14 +1,27 @@
+import logging
+
 import uvicorn
 from fastapi import FastAPI
-from starlette.staticfiles import StaticFiles
 from posts.router import router as post_router
 from auth.router import router as auth_router
+import betterlogging as bl
 
-app = FastAPI(
-    title="Trading App"
-)
 
-#app.mount("/static", StaticFiles(directory="static"), name="static")
+def setup_logging():
+    log_level = logging.INFO
+    bl.basic_colorized_config(level=log_level)
+
+    logging.basicConfig(
+        level=log_level,
+        format="%(filename)s:%(lineno)d #%(levelname)-8s [%(asctime)s] - %(name)s - %(message)s",
+    )
+    logger = logging.getLogger(__name__)
+    logger.info("Starting server")
+
+
+setup_logging()
+
+app = FastAPI(title="Trading App")
 
 app.include_router(post_router)
 app.include_router(auth_router)

@@ -1,4 +1,5 @@
 import asyncio
+import logging
 import threading
 
 from fastapi import APIRouter, Depends
@@ -6,8 +7,10 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.database import get_async_session
 from src.posts.models import VacancyRepository
-from src.posts.utils import push_to_db
+from src.posts.utils import hh_pusher_to_db
 from src.workers.ParserHH import ParserHH
+
+
 
 router = APIRouter(
     prefix="/posts",
@@ -41,5 +44,5 @@ async def start_pooling(key: str, session: AsyncSession = Depends(get_async_sess
         parser_hh = ParserHH()
         is_already_start = parser_hh.start_parsing()
         if not is_already_start:
-            asyncio.create_task(push_to_db(session))
+            asyncio.create_task(hh_pusher_to_db(session))
         return []

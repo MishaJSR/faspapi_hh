@@ -17,7 +17,7 @@ class Vacancy(Base):
     employer = Column(String, nullable=False)
     location = Column(String, nullable=False)
     is_active: bool = Column(Boolean, default=True, nullable=False)
-    registered_at = Column(TIMESTAMP, default=datetime.utcnow)
+    registered_at = Column(TIMESTAMP, default=datetime.utcnow, nullable=False)
 
 
 class VacancyRepository(SQLAlchemyRepository):
