@@ -14,8 +14,9 @@ class Settings(BaseSettings):
     DB_NAME: str
     DB_USER: str
     DB_PASS: str
+    TG_KEY: str
 
-    model_config = SettingsConfigDict(env_file=".env_dev")
+    model_config = SettingsConfigDict(env_file=".env")
 
     def get_database_url(self):
         return URL.create(
@@ -27,5 +28,10 @@ class Settings(BaseSettings):
             port=self.DB_PORT,
         ).render_as_string(hide_password=False)
 
+    def get_api_token(self):
+        return self.TG_KEY
+
 
 base_settings = Settings()
+
+

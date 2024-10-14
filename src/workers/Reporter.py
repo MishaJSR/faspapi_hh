@@ -5,6 +5,7 @@ from threading import Lock
 from database import get_async_session
 from posts.models import VacancyRepository
 from subscriber.models import SubscriberRepository
+from bot.bot import bot
 
 
 class ReporterMeta(type):
@@ -37,6 +38,8 @@ class Reporter(metaclass=ReporterMeta):
         for sub in sub_list:
             res = await self.find_post(target=sub.sub_tag, is_no_exp=sub.is_no_exp, is_remote=sub.is_remote)
             if res:
+                for el in res:
+                    await bot.send_message(chat_id=548349299, text=el.name)
                 logging.info(f"Send {len(res)} message matching old")
             else:
                 logging.info("Send no message matching old")
@@ -44,12 +47,15 @@ class Reporter(metaclass=ReporterMeta):
     async def find_post(self, target: str, is_no_exp: bool, is_remote: bool):
         async for session in get_async_session():
             filed_filter = {
-                "name": target,
                 "is_no_exp": is_no_exp,
                 "is_remote": is_remote
             }
-            res = await self.vac_repo.get_all_by_fields(session=session,
-                                                        data=["name", "url", "salary", "experience",
-                                                              "employer", "location"],
-                                                        field_filter=filed_filter)
+            contain_field = {
+                "name": target,
+            }
+            res = await self.vac_repo.get_all_by_one_contain_field(
+                session=session,
+                data=["name", "url", "salary", "is_no_exp", "is_remote", "employer", "location"],
+                field_filter=filed_filter,
+                contain_field=contain_field)
             return res

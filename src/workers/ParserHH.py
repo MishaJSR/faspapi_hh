@@ -10,6 +10,7 @@ from selenium.webdriver.common.by import By
 
 from posts.utils import hh_pusher_to_db
 from subscriber.utils import send_first_matches_by_sub
+from workers.Reporter import Reporter
 
 
 class ParserMeta(type):
@@ -45,6 +46,7 @@ class ParserHH(metaclass=ParserMeta):
         logging.info("Start Parser HH")
         self.brouser.get(self.url)
         time.sleep(10)
+        reporter = Reporter()
         counter = 0
         while True:
             logging.info("Start circle Parser HH")
@@ -77,13 +79,14 @@ class ParserHH(metaclass=ParserMeta):
 
             for link in links:
                 if link not in self.lst_of_vacancies:
-                    loop = asyncio.new_event_loop()
-                    asyncio.set_event_loop(loop)
-                    loop.run_until_complete(hh_pusher_to_db(new_vac=link))
-                    loop.run_until_complete(send_first_matches_by_sub(target=link[1], is_no_exp=link[3],
-                                                                      is_remote=link[4]))
-                    loop.close()
                     self.lst_of_vacancies.append(link)
+            #
+            loop = asyncio.new_event_loop()
+            asyncio.set_event_loop(loop)
+            loop.run_until_complete(hh_pusher_to_db(new_vac=link))
+            loop.run_until_complete(reporter.check_updates())
+            loop.close()
+            #
             thread_refresh = threading.Thread(target=self.refresh_browser)
             self.is_run_refresh = True
             thread_refresh.start()
