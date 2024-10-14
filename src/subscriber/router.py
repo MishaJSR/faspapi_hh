@@ -3,10 +3,10 @@ import asyncio
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.database import get_async_session
-from src.subscriber.models import SubscriberRepository
-from src.subscriber.schemas import ConstructSubscriber
-from src.subscriber.utils import send_first_matches_by_vac
+from database import get_async_session
+from subscriber.models import SubscriberRepository
+from subscriber.schemas import ConstructSubscriber
+from subscriber.utils import send_first_matches_by_vac
 
 router = APIRouter(
     prefix="/sub",

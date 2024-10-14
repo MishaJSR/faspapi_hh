@@ -26,3 +26,6 @@ class Settings(BaseSettings):
             database=self.DB_NAME,
             port=self.DB_PORT,
         ).render_as_string(hide_password=False)
+
+
+base_settings = Settings()

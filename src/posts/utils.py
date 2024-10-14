@@ -1,8 +1,8 @@
 import logging
 
-from src.database import get_async_session
-from src.posts.models import VacancyRepository
-from src.posts.schemas import ConstructVacancy
+from database import get_async_session
+from posts.models import VacancyRepository
+from posts.schemas import ConstructVacancy
 
 
 async def hh_pusher_to_db(new_vac=None):

@@ -8,8 +8,8 @@ from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
 
-from src.posts.utils import hh_pusher_to_db
-from src.subscriber.utils import send_first_matches_by_sub
+from posts.utils import hh_pusher_to_db
+from subscriber.utils import send_first_matches_by_sub
 
 
 class ParserMeta(type):

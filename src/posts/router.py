@@ -1,7 +1,7 @@
 from fastapi import APIRouter
 
-from src.workers.ParserHH import ParserHH
-from src.workers.Reporter import Reporter
+from workers.ParserHH import ParserHH
+from workers.Reporter import Reporter
 
 router = APIRouter(
     prefix="/posts",

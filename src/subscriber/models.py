@@ -1,8 +1,8 @@
 from sqlalchemy import (Boolean, Column, ForeignKey, Integer, String)
 
-from src.repository.repository import SQLAlchemyRepository
+from repository.repository import SQLAlchemyRepository
 
-from src.database import Base
+from database import Base
 
 
 class Subscriber(Base):

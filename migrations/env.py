@@ -5,7 +5,7 @@ from sqlalchemy import pool
 
 from alembic import context
 
-from src.config import Settings
+from base_settings import base_settings
 from src.database import Base, metadata
 from src.posts.models import *
 from src.user.models import *
@@ -14,7 +14,7 @@ from src.subscriber.models import *
 
 config = context.config
 
-db_url = Settings().get_database_url()
+db_url = base_settings.get_database_url()
 
 config.set_main_option("sqlalchemy.url",
                        db_url + '?async_fallback=True')

@@ -2,9 +2,9 @@ import asyncio
 import logging
 from threading import Lock
 
-from src.database import get_async_session
-from src.posts.models import VacancyRepository
-from src.subscriber.models import SubscriberRepository
+from database import get_async_session
+from posts.models import VacancyRepository
+from subscriber.models import SubscriberRepository
 
 
 class ReporterMeta(type):
