@@ -3,7 +3,7 @@ import logging
 import uvicorn
 from fastapi import FastAPI
 from posts.router import router as post_router
-from auth.router import router as auth_router
+from user.router import router as auth_router
 from subscriber.router import router as sub_router
 import betterlogging as bl
 

@@ -10,7 +10,6 @@ class User(Base):
 
     id = Column(Integer, primary_key=True)
     tg_user_id = Column(BigInteger, nullable=False, unique=True)
-    user_tag = Column(String, nullable=False)
     is_block_bot: bool = Column(Boolean, default=False, nullable=False)
     registered_at = Column(TIMESTAMP, default=datetime.utcnow)
 

@@ -1,8 +1,8 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.auth.models import UserRepository
-from src.auth.schemas import ConstructUser
+from src.user.models import UserRepository
+from src.user.schemas import ConstructUser
 from src.database import get_async_session
 
 router = APIRouter(
@@ -12,7 +12,7 @@ router = APIRouter(
 
 
 @router.post("/check_or_create")
-async def get_last_messages(tg_user_id: int, user_tag: str, session: AsyncSession = Depends(get_async_session)):
+async def get_last_messages(tg_user_id: int, session: AsyncSession = Depends(get_async_session)):
     user_repo = UserRepository()
     field_filter = {
         "tg_user_id": tg_user_id
@@ -22,7 +22,6 @@ async def get_last_messages(tg_user_id: int, user_tag: str, session: AsyncSessio
         return res
     else:
         res = await user_repo.add_object(session=session, data=ConstructUser(tg_user_id=tg_user_id,
-                                                                             user_tag=user_tag,
                                                                              is_block_bot=False).model_dump())
         return res
 

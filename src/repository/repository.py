@@ -2,6 +2,7 @@ from abc import ABC, abstractmethod
 
 from sqlalchemy import insert, update, delete, and_, select, func
 
+from src.repository.exceptions import async_sqlalchemy_exceptions
 from src.repository.utils import AlchemyDataObject
 from src.repository.utils import async_session_maker_decorator_select
 
@@ -32,10 +33,10 @@ class AbstractRepository(ABC):
         raise NotImplementedError
 
 
-
 class SQLAlchemyRepository(AbstractRepository):
     model: None
 
+    @async_sqlalchemy_exceptions
     async def add_object(self, **kwargs) -> int:
         session = kwargs.get("session")
         stmt = insert(self.model).values(**kwargs.get("data")).returning(self.model.id)
@@ -53,6 +54,7 @@ class SQLAlchemyRepository(AbstractRepository):
         res_values = [el._data for el in kwargs.get("result_query").fetchall()]
         return [AlchemyDataObject(kwargs.get("data"), value) for value in res_values]
 
+    @async_sqlalchemy_exceptions
     async def delete_fields(self, **kwargs):
         conditions = [getattr(self.model, key) == value for key, value in kwargs.get("delete_filter").items()]
         session = kwargs.get("session")
@@ -60,6 +62,7 @@ class SQLAlchemyRepository(AbstractRepository):
         await session.execute(stmt)
         await session.commit()
 
+    @async_sqlalchemy_exceptions
     async def update_fields(self, **kwargs) -> list[AlchemyDataObject]:
         conditions = [getattr(self.model, key) == value for key, value in kwargs.get("update_filter").items()]
         session = kwargs.get("session")
@@ -69,6 +72,7 @@ class SQLAlchemyRepository(AbstractRepository):
         res_values = [el._data for el in res.fetchall()]
         return [AlchemyDataObject(kwargs.get("update_data"), value) for value in res_values]
 
+    @async_sqlalchemy_exceptions
     async def get_all_contain_fields(self, **kwargs):
         session = kwargs.get("session")
         query = select(*[getattr(self.model, field) for field in kwargs.get("data")])
