@@ -75,18 +75,18 @@ class ParserHH(metaclass=ParserMeta):
                     is_no_exp = True
                 if "Можно удаленно" in additions:
                     is_remote = True
-                links.append([url, vacancy_name, salary, is_no_exp,is_remote, employer, location])
+                links.append([url, vacancy_name, salary, is_no_exp, is_remote, employer, location])
 
+            new_links = []
             for link in links:
                 if link not in self.lst_of_vacancies:
                     self.lst_of_vacancies.append(link)
-            #
+                    new_links.append(link)
+
             loop = asyncio.new_event_loop()
             asyncio.set_event_loop(loop)
-            loop.run_until_complete(hh_pusher_to_db(new_vac=link))
-            loop.run_until_complete(reporter.check_updates())
+            loop.run_until_complete(self.set_gather_links(new_links))
             loop.close()
-            #
             thread_refresh = threading.Thread(target=self.refresh_browser)
             self.is_run_refresh = True
             thread_refresh.start()
@@ -107,3 +107,7 @@ class ParserHH(metaclass=ParserMeta):
         while self.is_run_refresh:
             self.brouser.refresh()
             break
+
+    async def set_gather_links(self, links):
+        tasks = [hh_pusher_to_db(new_vac=link) for link in links]
+        await asyncio.gather(*tasks)

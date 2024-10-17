@@ -99,9 +99,9 @@ class SQLAlchemyRepository(AbstractRepository):
         session = kwargs.get("session")
         query = select(*[getattr(self.model, field) for field in kwargs.get("data")])
         for key, value in kwargs.get("contain_value").items():
-            query = query.filter(func.lower(getattr(self.model, key)).in_(f"{value.lower()}"))
-        for key, value in kwargs.get("field_filter").items():
-            query = query.filter(getattr(self.model, key) == value)
+            query = query.where((f"{value.lower()}").contains(self.model, key))
+        # for key, value in kwargs.get("field_filter").items():
+        #     query = query.filter(getattr(self.model, key) == value)
         res = await session.execute(query)
         res_values = [el._data for el in res.fetchall()]
         return [AlchemyDataObject(kwargs.get("data"), value) for value in res_values]

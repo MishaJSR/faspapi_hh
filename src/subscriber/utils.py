@@ -30,9 +30,8 @@ async def send_first_matches_by_sub(target: str, is_no_exp: bool, is_remote: boo
             "is_no_exp": is_no_exp,
             "is_remote": is_remote
         }
-        clean_target = re.sub(r"[,-]", " ", target)
         contain_value = {
-            "sub_tag": clean_target
+            "sub_tag": target
         }
         res = await SubscriberRepository().get_all_by_one_contain_value(
             session=session,

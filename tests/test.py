@@ -1,9 +1,30 @@
-import requests
+import asyncio
+from concurrent.futures import ThreadPoolExecutor
 
-url = "http://127.0.0.1:8000/user/check_or_create"
-data = {"tg_user_id": 132, "user_tag": "sdfdf"}
 
-response = requests.post(url, json=data)
+# Асинхронная функция
+async def async_function(value):
+    await asyncio.sleep(1)  # Имитация длительной операции
+    return f"Результат для {value}"
 
-print(response.status_code)
-print(response.json())
+
+# Функция-обертка для запуска асинхронной функции
+def run_async_function(value):
+    loop = asyncio.new_event_loop()
+    asyncio.set_event_loop(loop)
+    result = loop.run_until_complete(async_function(value))
+    loop.close()
+    return result
+
+
+# Основной код
+values = [1, 2, 3, 4, 5]  # Пример списка значений
+
+results = []
+with ThreadPoolExecutor() as executor:
+    futures = [executor.submit(run_async_function, value) for value in values]
+
+    for future in futures:
+        results.append(future.result())  # Дождаться завершения каждого потока
+
+print(results)
