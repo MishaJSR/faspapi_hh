@@ -24,7 +24,7 @@ class Reporter(metaclass=ReporterMeta):
     def __init__(self) -> None:
         self.sub_repo = SubscriberRepository()
         self.vac_repo = VacancyRepository()
-        self.is_run = False
+        self.is_run = True
 
     def start_send(self) -> None:
         if not self.is_run:

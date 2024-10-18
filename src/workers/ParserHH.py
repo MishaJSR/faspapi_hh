@@ -111,4 +111,6 @@ class ParserHH(metaclass=ParserMeta):
 
     async def get_new_links(self, links):
         for link in links:
-            await hh_pusher_to_db(new_vac=link)
+            is_new = await hh_pusher_to_db(new_vac=link)
+            if is_new:
+                await send_first_matches_by_sub(link=link)
