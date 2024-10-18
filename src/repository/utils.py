@@ -2,7 +2,23 @@ import logging
 
 from sqlalchemy import select, desc
 
+from database import async_session_maker
 from repository.exceptions import CustomException
+
+
+def connection(method):
+    async def wrapper(*args, **kwargs):
+        async with async_session_maker() as session:
+            try:
+                # Явно не открываем транзакции, так как они уже есть в контексте
+                return await method(*args, session=session, **kwargs)
+            except Exception as e:
+                await session.rollback()  # Откатываем сессию при ошибке
+                raise e  # Поднимаем исключение дальше
+            finally:
+                await session.close()  # Закрываем сессию
+
+    return wrapper
 
 
 def async_session_maker_decorator_select(func):
@@ -22,7 +38,7 @@ def async_session_maker_decorator_select(func):
                     query = select(*[getattr(self_object.model, field) for field in data]).distinct()
                 else:
                     if order_filter:
-                        query = select(*[getattr(self_object.model, field) for field in data])\
+                        query = select(*[getattr(self_object.model, field) for field in data]) \
                             .order_by(desc(getattr(self_object.model, order_filter)))
                     else:
                         query = select(*[getattr(self_object.model, field) for field in data])

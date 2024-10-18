@@ -1,3 +1,4 @@
+import asyncio
 import logging
 
 from database import get_async_session
@@ -22,5 +23,3 @@ async def hh_pusher_to_db(new_vac=None):
             logging.info(f"Add new vacancy")
         else:
             logging.info(f"Vacancy was already add")
-
-

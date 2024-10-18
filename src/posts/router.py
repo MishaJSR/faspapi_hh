@@ -1,5 +1,7 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
+from sqlalchemy.ext.asyncio import AsyncSession
 
+from database import get_async_session
 from workers.ParserHH import ParserHH
 from workers.Reporter import Reporter
 

@@ -1,30 +1,49 @@
 import asyncio
-from concurrent.futures import ThreadPoolExecutor
+import concurrent.futures
+import time
+import random
 
 
-# Асинхронная функция
-async def async_function(value):
-    await asyncio.sleep(1)  # Имитация длительной операции
-    return f"Результат для {value}"
+async def async_function_1(value):
+    s = random.randint(1, 5)
+    await asyncio.sleep(random.randint(1, 5))
+    print(f"I sleep {s} from async_function_1 with value {value}")
+    return "s"
 
 
-# Функция-обертка для запуска асинхронной функции
-def run_async_function(value):
+async def async_function_2(value):
+    s = random.randint(1, 5)
+    await asyncio.sleep(random.randint(1, 5))
+    print(f"I sleep {s} from async_function_2 with value {value}")
+    return "s"
+
+
+def run_async_functions(value):
     loop = asyncio.new_event_loop()
     asyncio.set_event_loop(loop)
-    result = loop.run_until_complete(async_function(value))
-    loop.close()
-    return result
+    result1 = loop.run_until_complete(async_function_1(value))
+    result2 = loop.run_until_complete(async_function_2(value))
+    return result1, result2
 
 
-# Основной код
-values = [1, 2, 3, 4, 5]  # Пример списка значений
+def main(values):
+    start_time = time.time()
 
-results = []
-with ThreadPoolExecutor() as executor:
-    futures = [executor.submit(run_async_function, value) for value in values]
+    with concurrent.futures.ThreadPoolExecutor() as executor:
+        futures = list(executor.map(lambda args: run_async_functions(args), values))
+        print(futures)
 
-    for future in futures:
-        results.append(future.result())  # Дождаться завершения каждого потока
+    # for future in concurrent.futures.as_completed(futures):
+    #     if time.time() - start_time > 20:
+    #         print("Ошибка: превышено время ожидания в 5 секунд")
+    #         break
+    #
+    #     try:
+    #         result = future.result()
+    #     except Exception as e:
+    #         print(f"Ошибка при выполнении функции для значения {futures[future]}: {e}")
 
-print(results)
+
+if __name__ == "__main__":
+    values = [1, 2, 3, 4, 5]
+    main(values)
