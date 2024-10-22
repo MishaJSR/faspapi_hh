@@ -16,3 +16,6 @@ class User(Base):
 
 class UserRepository(SQLAlchemyRepository):
     model = User
+
+
+user_repository = UserRepository()

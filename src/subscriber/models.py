@@ -17,3 +17,6 @@ class Subscriber(Base):
 
 class SubscriberRepository(SQLAlchemyRepository):
     model = Subscriber
+
+
+sub_repository = SubscriberRepository()

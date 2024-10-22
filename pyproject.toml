@@ -19,6 +19,12 @@ betterlogging = "^1.0.0"
 python-telegram-bot = "^21.6"
 alembic = "^1.13.3"
 requests = "^2.32.3"
+jupyter = "^1.1.1"
+spacy = "^3.8.2"
+torch = "^2.5.0"
+transformers = "^4.45.2"
+pandas = "^2.2.3"
+loguru = "^0.7.2"
 
 
 [build-system]

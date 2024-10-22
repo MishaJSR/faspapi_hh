@@ -4,6 +4,6 @@ from pydantic import BaseModel, conint
 
 
 class ConstructUser(BaseModel):
-    tg_user_id: conint(strict=True, gt=0)
+    tg_user_id: int
     is_block_bot: Optional[bool] = False
 

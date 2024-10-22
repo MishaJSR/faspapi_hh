@@ -1,11 +1,5 @@
-import os
-
-from dotenv import load_dotenv
-from pydantic.v1 import BaseSettings
-from pydantic_settings import SettingsConfigDict
+from pydantic_settings import BaseSettings
 from sqlalchemy import URL
-
-load_dotenv()
 
 
 class Settings(BaseSettings):
@@ -15,8 +9,6 @@ class Settings(BaseSettings):
     DB_USER: str
     DB_PASS: str
     TG_KEY: str
-
-    model_config = SettingsConfigDict(env_file=".env")
 
     def get_database_url(self):
         return URL.create(
@@ -32,6 +24,4 @@ class Settings(BaseSettings):
         return self.TG_KEY
 
 
-base_settings = Settings()
-
-
+base_settings = Settings(_env_file=".env", _env_file_encoding="utf-8")

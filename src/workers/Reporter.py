@@ -3,8 +3,8 @@ import logging
 from threading import Lock
 
 from database import get_async_session
-from posts.models import VacancyRepository
-from subscriber.models import SubscriberRepository
+from posts.models import vac_repository
+from subscriber.models import sub_repository
 from bot.bot import bot
 
 
@@ -22,8 +22,6 @@ class ReporterMeta(type):
 
 class Reporter(metaclass=ReporterMeta):
     def __init__(self) -> None:
-        self.sub_repo = SubscriberRepository()
-        self.vac_repo = VacancyRepository()
         self.is_run = True
 
     def start_send(self) -> None:
@@ -32,7 +30,7 @@ class Reporter(metaclass=ReporterMeta):
 
     async def check_updates(self) -> None:
         async for session in get_async_session():
-            sub_list = await self.sub_repo.get_all_by_fields(session=session,
+            sub_list = await sub_repository.get_all_by_fields(session=session,
                                                              data=["sub_tag", "is_no_exp", "is_remote", "user_tg_id"])
             for sub in sub_list:
                 res = await self.find_post(session=session, target=sub.sub_tag,
@@ -52,7 +50,7 @@ class Reporter(metaclass=ReporterMeta):
         contain_field = {
             "name": target,
         }
-        res = await self.vac_repo.get_all_by_one_contain_field(
+        res = await vac_repository.get_all_by_one_contain_field(
             session=session,
             data=["name", "url", "salary", "is_no_exp", "is_remote", "employer", "location"],
             field_filter=filed_filter,

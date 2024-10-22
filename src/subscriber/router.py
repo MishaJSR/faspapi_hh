@@ -4,7 +4,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from database import get_async_session
-from subscriber.models import SubscriberRepository
+from subscriber.models import sub_repository
 from subscriber.schemas import ConstructSubscriber
 from subscriber.utils import send_first_matches_by_vac
 
@@ -15,35 +15,30 @@ router = APIRouter(
 
 
 @router.post("/subscribe_user")
-async def subscribe_user(user_tg_id: int, target: str, is_no_exp: bool, is_remote: bool,
-                         session: AsyncSession = Depends(get_async_session)):
-    sub_repo = SubscriberRepository()
+async def subscribe_user(data=Depends(ConstructSubscriber), session: AsyncSession = Depends(get_async_session)):
     field_filter = {
-        "user_tg_id": user_tg_id
+        "user_tg_id": data.user_tg_id
     }
-    res = await sub_repo.get_one_by_fields(session=session, data=["id", "user_tg_id"], field_filter=field_filter)
+    res = await sub_repository.get_one_by_fields(session=session, data=["id", "user_tg_id"], field_filter=field_filter)
     if not res:
-        sub_id = await sub_repo.add_object(session=session,
-                                           data=ConstructSubscriber(user_tg_id=user_tg_id,
-                                                                    sub_tag=target,
-                                                                    is_no_exp=is_no_exp,
-                                                                    is_remote=is_remote).model_dump())
+        sub_id = await sub_repository.add_object(session=session, data=data.model_dump())
     else:
         update_filter = {
-            "user_tg_id": user_tg_id,
+            "user_tg_id": data.user_tg_id,
         }
         update_data = {
-            "sub_tag": target,
-            "is_no_exp": is_no_exp,
-            "is_remote": is_remote,
-            "user_tg_id": user_tg_id,
+            "sub_tag": data.target,
+            "is_no_exp": data.is_no_exp,
+            "is_remote": data.is_remote,
+            "user_tg_id": data.user_tg_id,
         }
-        sub_id = await sub_repo.update_fields(session=session, update_data=update_data, update_filter=update_filter)
+        sub_id = await sub_repository.update_fields(session=session,
+                                                    update_data=update_data,
+                                                    update_filter=update_filter)
     if sub_id:
-        asyncio.create_task(send_first_matches_by_vac(target=target, is_no_exp=is_no_exp, is_remote=is_remote))
+        asyncio.create_task(send_first_matches_by_vac(target=data.target,
+                                                      is_no_exp=data.is_no_exp,
+                                                      is_remote=data.is_remote))
         return sub_id
     else:
         raise HTTPException(status_code=400, detail="Данный пользователь отсутствует")
-
-
-

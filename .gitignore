@@ -1,2 +1,4 @@
 .idea
 src/.env
+tests/models/deep-pavlov-rubert/model.safetensors
+tests/models/rubert_base/model.safetensors

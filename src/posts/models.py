@@ -22,3 +22,6 @@ class Vacancy(Base):
 
 class VacancyRepository(SQLAlchemyRepository):
     model = Vacancy
+
+
+vac_repository = VacancyRepository()
