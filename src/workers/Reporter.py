@@ -24,10 +24,13 @@ class ReporterMeta(type):
 class Reporter(metaclass=ReporterMeta):
     def __init__(self) -> None:
         self.is_run = False
+        self.background_tasks = set()
 
     def start_send(self) -> None:
         if not self.is_run:
-            asyncio.create_task(self.check_updates())
+            task = asyncio.create_task(self.check_updates())
+            self.background_tasks.add(task)
+            task.add_done_callback(self.background_tasks.discard)
             self.is_run = True
 
     @connection

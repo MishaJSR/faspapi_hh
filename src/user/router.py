@@ -20,5 +20,4 @@ async def get_last_messages(data=Depends(ConstructUser), session: AsyncSession =
     if res:
         return res
     else:
-        res = await user_repository.add_object(session=session, data=data.model_dump())
-        return res
+        return await user_repository.add_object(session=session, data=data.model_dump())
