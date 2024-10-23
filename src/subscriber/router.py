@@ -36,9 +36,9 @@ async def subscribe_user(data=Depends(ConstructSubscriber), session: AsyncSessio
                                                     update_data=update_data,
                                                     update_filter=update_filter)
     if sub_id:
-        asyncio.create_task(send_first_matches_by_vac(target=data.target,
-                                                      is_no_exp=data.is_no_exp,
-                                                      is_remote=data.is_remote))
+        await send_first_matches_by_vac(target=data.target,
+                                        is_no_exp=data.is_no_exp,
+                                        is_remote=data.is_remote)
         return sub_id
     else:
         raise HTTPException(status_code=400, detail="Данный пользователь отсутствует")

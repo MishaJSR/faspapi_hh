@@ -12,7 +12,7 @@ router = APIRouter(
 
 
 @router.post("/check_or_create")
-async def get_last_messages(data=Depends(ConstructUser), session: AsyncSession = Depends(get_async_session)):
+async def get_last_messages(data=Depends(ConstructUser), session: AsyncSession = Depends(get_async_session)) -> int:
     field_filter = {
         "tg_user_id": data.tg_user_id
     }

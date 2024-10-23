@@ -109,7 +109,8 @@ class ParserHH(metaclass=ParserMeta):
             self.brouser.refresh()
             break
 
-    async def get_new_links(self, links):
+    @staticmethod
+    async def get_new_links(links):
         for link in links:
             is_new = await hh_pusher_to_db(new_vac=link)
             if is_new:

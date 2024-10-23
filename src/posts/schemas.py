@@ -1,10 +1,12 @@
 from typing import Optional
 
-from pydantic import BaseModel, AnyUrl
+import pydantic
+from pydantic import BaseModel, field_validator
+import validators
 
 
 class ConstructVacancy(BaseModel):
-    url: AnyUrl
+    url: str
     name: str
     salary: str
     is_no_exp: bool
@@ -12,3 +14,11 @@ class ConstructVacancy(BaseModel):
     employer: str
     location: str
     is_active: Optional[bool] = True
+
+    @field_validator('url')
+    def validate_url(cls, v):
+        if not validators.url(v):
+            raise pydantic.ValidationError
+        return v
+
+
