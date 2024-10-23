@@ -1,6 +1,6 @@
 import logging
 
-from bot.bot import bot
+from bot_service.bot import bot
 from posts.models import VacancyRepository, vac_repository
 from repository.utils import connection
 from subscriber.models import sub_repository

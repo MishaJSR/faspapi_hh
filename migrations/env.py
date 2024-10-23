@@ -6,10 +6,10 @@ from sqlalchemy import pool
 from alembic import context
 
 from base_settings import base_settings
-from src.database import Base, metadata
-from src.posts.models import *
-from src.user.models import *
-from src.subscriber.models import *
+from fastapi.database import Base, metadata
+from fastapi.posts.models import *
+from fastapi.user.models import *
+from fastapi.subscriber.models import *
 
 
 config = context.config
