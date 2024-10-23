@@ -1,5 +1,5 @@
 .idea
-bot_service/.env
+bot-service/.env
 tests/models/deep-pavlov-rubert/model.safetensors
 tests/models/rubert_base/model.safetensors
 fastapi/.env
