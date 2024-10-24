@@ -45,7 +45,7 @@ class SQLAlchemyRepository(AbstractRepository):
         return res.scalar_one()
 
     @async_session_maker_decorator_select
-    async def get_one_by_fields(self, **kwargs) -> AlchemyDataObject:
+    async def get_one_by_fields(self, **kwargs) -> AlchemyDataObject | None:
         if not kwargs.get("result_query").fetchone():
             return None
         res_value = list(kwargs.get("result_query").fetchone())
