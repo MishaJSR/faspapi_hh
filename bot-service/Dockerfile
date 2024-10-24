@@ -1,5 +1,5 @@
 FROM python:3.11-slim
-WORKDIR /usr/src/app/fast
+WORKDIR /usr/src/app/tg-bot
 # python env
 ENV PYTHONUNBUFFERED=1 \
     PYTHONDONTWRITEBYTECODE=1 \
@@ -15,6 +15,7 @@ ENV PYTHONUNBUFFERED=1 \
 ENV PATH="$POETRY_HOME/bin:$VENV_PATH/bin:$PATH"
 
 RUN python -c 'from urllib.request import urlopen; print(urlopen("https://install.python-poetry.org").read().decode())' | python -
+
 
 COPY pyproject.toml poetry.lock ./
 

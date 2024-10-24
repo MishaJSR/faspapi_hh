@@ -1,20 +1,21 @@
 from logging.config import fileConfig
 
-from sqlalchemy import engine_from_config, URL
+from sqlalchemy import engine_from_config
 from sqlalchemy import pool
 
 from alembic import context
-
 from base_settings import base_settings
-from fastapi.database import Base, metadata
-from fastapi.posts.models import *
-from fastapi.user.models import *
-from fastapi.subscriber.models import *
+from database import Base, metadata
+from posts.models import *
+from subscriber.models import *
+from user.models import *
+
 
 
 config = context.config
 
 db_url = base_settings.get_database_url()
+print(db_url)
 
 config.set_main_option("sqlalchemy.url",
                        db_url + '?async_fallback=True')

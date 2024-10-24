@@ -1,9 +1,13 @@
 import logging
 
-from bot_service.bot import bot
-from posts.models import VacancyRepository, vac_repository
+from posts.models import vac_repository
 from repository.utils import connection
 from subscriber.models import sub_repository
+
+from base_settings import base_settings
+from telegram import Bot
+
+bot = Bot(token=base_settings.get_api_token())
 
 
 @connection

@@ -2,11 +2,10 @@ import asyncio
 import logging
 from threading import Lock
 
-from database import get_async_session
 from posts.models import vac_repository
 from repository.utils import connection
 from subscriber.models import sub_repository
-from bot_service.bot import bot
+from subscriber.utils import bot
 
 
 class ReporterMeta(type):

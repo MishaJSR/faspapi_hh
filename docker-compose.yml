@@ -5,16 +5,14 @@ services:
     container_name: "tg-service"
     stop_signal: SIGINT
     build:
-      context: ./
-    working_dir: /usr/src/app/fast/bot-service
+      context: ./bot-service
+#      dockerfile: .Dockerfile
     depends_on:
       - pg-database
       - redis-db
     command: >
       sh -c "poetry run python3 -m bot"
     restart: always
-    env_file:
-      - ./bot-service/.env
     logging:
       driver: "json-file"
       options:
@@ -25,17 +23,14 @@ services:
     image: "fastapi-service"
     stop_signal: SIGINT
     build:
-      context: .
-    working_dir: /usr/src/app/fast/fastapi
+      context: ./fastapi-service
     depends_on:
       - pg-database
     stdin_open: true
     command: >
       sh -c "poetry run python3 -m main"
-    env_file:
-      - ./fastapi/.env
     ports:
-      - "8080:8080"
+      - "8010:8010"
     restart: always
     logging:
       driver: "json-file"
@@ -58,7 +53,7 @@ services:
              -c work_mem=3495kB -c min_wal_size=1GB -c max_wal_size=4GB -c max_worker_processes=2
              -c max_parallel_workers_per_gather=1 -c max_parallel_workers=2 -c max_parallel_maintenance_workers=1"
     env_file:
-      - ./fastapi/.env
+      - fastapi-service/.env
     logging:
       driver: "json-file"
       options:

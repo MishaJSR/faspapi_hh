@@ -3,21 +3,21 @@ from sqlalchemy import URL
 
 
 class Settings(BaseSettings):
-    DB_HOST: str
-    DB_PORT: int
-    DB_NAME: str
-    DB_USER: str
-    DB_PASS: str
+    POSTGRES_HOST: str
+    POSTGRES_PORT: int
+    POSTGRES_DB: str
+    POSTGRES_USER: str
+    POSTGRES_PASSWORD: str
     TG_KEY: str
 
     def get_database_url(self):
         return URL.create(
             drivername=f"postgresql+asyncpg",
-            host=self.DB_HOST,
-            password=self.DB_PASS,
-            username=self.DB_USER,
-            database=self.DB_NAME,
-            port=self.DB_PORT,
+            host=self.POSTGRES_HOST,
+            password=self.POSTGRES_PASSWORD,
+            username=self.POSTGRES_USER,
+            database=self.POSTGRES_DB,
+            port=self.POSTGRES_PORT,
         ).render_as_string(hide_password=False)
 
     def get_api_token(self):
