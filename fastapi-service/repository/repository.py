@@ -46,14 +46,18 @@ class SQLAlchemyRepository(AbstractRepository):
 
     @async_session_maker_decorator_select
     async def get_one_by_fields(self, **kwargs) -> AlchemyDataObject | None:
-        if not kwargs.get("result_query").fetchone():
+        res = kwargs.get("result_query").fetchone()
+        if not res:
             return None
-        res_value = list(kwargs.get("result_query").fetchone())
+        res_value = list(res)
         return AlchemyDataObject(kwargs.get("data"), res_value)
 
     @async_session_maker_decorator_select
-    async def get_all_by_fields(self, **kwargs) -> list[AlchemyDataObject]:
-        res_values = [el._data for el in kwargs.get("result_query").fetchall()]
+    async def get_all_by_fields(self, **kwargs) -> list[AlchemyDataObject] | None:
+        res = kwargs.get("result_query").fetchall()
+        if not res:
+            return None
+        res_values = [el._data for el in res]
         return [AlchemyDataObject(kwargs.get("data"), value) for value in res_values]
 
     @async_sqlalchemy_exceptions
@@ -88,10 +92,12 @@ class SQLAlchemyRepository(AbstractRepository):
     async def get_all_by_one_contain_field(self, **kwargs):
         session = kwargs.get("session")
         query = select(*[getattr(self.model, field) for field in kwargs.get("data")])
-        for key, value in kwargs.get("contain_field").items():
-            query = query.filter((func.lower(getattr(self.model, key))).contains(func.lower(value)))
-        for key, value in kwargs.get("field_filter").items():
-            query = query.filter(getattr(self.model, key) == value)
+        if kwargs.get("contain_field"):
+            for key, value in kwargs.get("contain_field").items():
+                query = query.filter(getattr(self.model, key).ilike(f"%{value}%"))
+        if kwargs.get("field_filter"):
+            for key, value in kwargs.get("field_filter").items():
+                query = query.filter(getattr(self.model, key) == value)
         res = await session.execute(query)
         res_values = [el._data for el in res.fetchall()]
         return [AlchemyDataObject(kwargs.get("data"), value) for value in res_values]

@@ -1,8 +1,8 @@
 import asyncio
 import logging
 
-from posts.models import vac_repository
-from posts.schemas import ConstructVacancy
+from vacancy.models import vac_repository
+from vacancy.schemas import ConstructVacancy
 from repository.utils import connection
 
 

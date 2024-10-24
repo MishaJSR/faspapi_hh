@@ -9,7 +9,7 @@ from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
 import concurrent.futures
 
-from posts.utils import hh_pusher_to_db
+from vacancy.utils import hh_pusher_to_db
 from subscriber.utils import send_first_matches_by_sub
 from workers.Reporter import Reporter
 

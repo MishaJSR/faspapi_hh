@@ -1,6 +1,6 @@
 import logging
 
-from posts.models import vac_repository
+from vacancy.models import vac_repository
 from repository.utils import connection
 from subscriber.models import sub_repository
 
@@ -13,14 +13,18 @@ bot = Bot(token=base_settings.get_api_token())
 @connection
 async def send_first_matches_by_vac(session=None, target: str = None, is_no_exp: bool = None, is_remote: bool = None):
     filed_filter = {
-        "name": target,
         "is_no_exp": is_no_exp,
         "is_remote": is_remote
     }
-    res = await vac_repository.get_all_by_fields(session=session,
-                                                 data=["name", "url", "salary", "is_no_exp",
-                                                       "is_remote", "employer", "location"],
-                                                 field_filter=filed_filter)
+    contain_field = {
+        "name": target.lower(),
+    }
+    res = await vac_repository.get_all_by_one_contain_field(
+        session=session,
+        data=["name", "url", "salary", "is_no_exp", "is_remote", "employer", "location"],
+        field_filter=filed_filter,
+        contain_field=contain_field
+    )
     if res:
         logging.info(f"send {len(res)} matches")
     else:

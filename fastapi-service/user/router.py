@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from user.models import user_repository
@@ -18,6 +18,6 @@ async def get_last_messages(data=Depends(ConstructUser), session: AsyncSession =
     }
     res = await user_repository.get_one_by_fields(session=session, data=["id", "tg_user_id"], field_filter=field_filter)
     if res:
-        return res
+        raise HTTPException(status_code=400, detail="Данный пользователь уже зарегистрирован")
     else:
         return await user_repository.add_object(session=session, data=data.model_dump())

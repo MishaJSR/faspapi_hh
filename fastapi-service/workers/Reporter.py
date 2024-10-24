@@ -2,7 +2,7 @@ import asyncio
 import logging
 from threading import Lock
 
-from posts.models import vac_repository
+from vacancy.models import vac_repository
 from repository.utils import connection
 from subscriber.models import sub_repository
 from subscriber.utils import bot
@@ -41,7 +41,10 @@ class Reporter(metaclass=ReporterMeta):
                                        is_no_exp=sub.is_no_exp, is_remote=sub.is_remote)
             if res:
                 for el in res:
-                    await bot.send_message(chat_id=548349299, text=el.name)
+                    await bot.send_message(chat_id=548349299, text=f"{el.name}\n"
+                                                                   f"{el.url}\n"
+                                                                   f"{el.salary}\n"
+                                                                   f"{el.employer}")
                 logging.info(f"Send {len(res)} message matching old")
             else:
                 logging.info("Send no message matching old")
