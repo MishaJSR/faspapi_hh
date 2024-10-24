@@ -751,6 +751,16 @@ files = [
 ]
 
 [[package]]
+name = "chromedriver-binary-auto"
+version = "0.3.1"
+description = "Installer for chromedriver."
+optional = false
+python-versions = "*"
+files = [
+    {file = "chromedriver-binary-auto-0.3.1.tar.gz", hash = "sha256:6e58e5e8eeedd52d83c09129e53f9a29d3a12a2324b9d47e0116e6daf0155761"},
+]
+
+[[package]]
 name = "click"
 version = "8.1.7"
 description = "Composable command line interface toolkit"
@@ -5062,4 +5072,4 @@ propcache = ">=0.2.0"
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.11"
-content-hash = "8135aec8ea5d52cbd7ab164681a3ca73a48642a5828b1cfa675d3a1ffe0583d1"
+content-hash = "2866c01669be57eae91734d73952b0d94a81061408043815bd418b97e7bfccf5"
