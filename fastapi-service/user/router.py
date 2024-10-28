@@ -1,6 +1,8 @@
+import grpc
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from grpc_service import message_pb2_grpc, message_pb2
 from user.models import user_repository
 from user.schemas import ConstructUser
 from database import get_async_session
@@ -21,3 +23,13 @@ async def get_last_messages(data=Depends(ConstructUser), session: AsyncSession =
         raise HTTPException(status_code=400, detail="Данный пользователь уже зарегистрирован")
     else:
         return await user_repository.add_object(session=session, data=data.model_dump())
+
+
+
+@router.post("/send_grpc_message")
+async def get_last_messages(text: str):
+    async with grpc.aio.insecure_channel('localhost:50051') as channel:
+        stub = message_pb2_grpc.MessageServiceStub(channel)
+        response = await stub.SendMessage(message_pb2.Message(text=text))
+    return response.text
+
