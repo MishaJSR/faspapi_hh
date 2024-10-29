@@ -12,7 +12,8 @@ bot = Bot(token=base_settings.get_api_token())
 
 
 @connection
-async def send_first_matches_by_vac(session=None, target: str = None, is_no_exp: bool = None, is_remote: bool = None):
+async def send_first_matches_by_vac(session=None, target: str = None, is_no_exp: bool = None,
+                                    is_remote: bool = None, sub_id: int = None):
     filed_filter = {
         "is_no_exp": is_no_exp,
         "is_remote": is_remote
@@ -27,6 +28,11 @@ async def send_first_matches_by_vac(session=None, target: str = None, is_no_exp:
         contain_field=contain_field
     )
     if res:
+        for vac in res:
+            await send_grpc_to_tg(tg_user_id=sub_id, text=f"{vac.name}\n"
+                                                          f"{vac.url}\n"
+                                                          f"{vac.salary}\n"
+                                                          f"{vac.employer}")
         logging.info(f"send {len(res)} matches")
     else:
         logging.info(f"No matches")
@@ -48,9 +54,9 @@ async def send_first_matches_by_sub(session=None, link: list = None):
         for el in res:
             if el.sub_tag.lower() in vacancy_name.lower():
                 await send_grpc_to_tg(tg_user_id=el.user_tg_id, text=f"{el.name}\n"
-                                                                      f"{el.url}\n"
-                                                                      f"{el.salary}\n"
-                                                                      f"{el.employer}")
+                                                                     f"{el.url}\n"
+                                                                     f"{el.salary}\n"
+                                                                     f"{el.employer}")
                 count += 1
         logging.info(f"send {count} matches")
     else:
