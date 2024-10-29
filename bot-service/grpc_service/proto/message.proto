@@ -4,6 +4,7 @@ package messaging;
 
 message Message {
   string text = 1;
+  int64 tg_user_id = 2;
 }
 
 service MessageService {

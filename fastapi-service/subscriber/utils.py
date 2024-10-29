@@ -1,5 +1,6 @@
 import logging
 
+from grpc_utils.utils import send_grpc_to_tg
 from vacancy.models import vac_repository
 from repository.utils import connection
 from subscriber.models import sub_repository
@@ -46,10 +47,10 @@ async def send_first_matches_by_sub(session=None, link: list = None):
         count = 0
         for el in res:
             if el.sub_tag.lower() in vacancy_name.lower():
-                await bot.send_message(chat_id=el.user_tg_id, text=f"{vacancy_name}\n"
-                                                                   f"{url}\n"
-                                                                   f"{salary}\n"
-                                                                   f"{employer}")
+                await send_grpc_to_tg(tg_user_id=el.user_tg_id, text=f"{el.name}\n"
+                                                                      f"{el.url}\n"
+                                                                      f"{el.salary}\n"
+                                                                      f"{el.employer}")
                 count += 1
         logging.info(f"send {count} matches")
     else:

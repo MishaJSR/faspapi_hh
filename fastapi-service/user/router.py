@@ -1,10 +1,12 @@
 import grpc
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
+from fastapi.responses import JSONResponse
 
 from grpc_service import message_pb2_grpc, message_pb2
+from grpc_utils.utils import send_grpc_to_tg
 from user.models import user_repository
-from user.schemas import ConstructUser
+from user.schemas import ConstructUser, ResponseAllUsers
 from database import get_async_session
 
 router = APIRouter(
@@ -25,12 +27,31 @@ async def get_last_messages(data=Depends(ConstructUser), session: AsyncSession =
         return await user_repository.add_object(session=session, data=data.model_dump())
 
 
+@router.post("/remove_user")
+async def get_last_messages(tg_user_id: int, session: AsyncSession = Depends(get_async_session)) -> int:
+    delete_filter = {
+        "tg_user_id": tg_user_id
+    }
+    res = await user_repository.delete_fields(session=session, delete_filter=delete_filter)
+    if res:
+        return JSONResponse(content={"message": "Пользователь удален"}, status_code=200)
+    else:
+        raise HTTPException(status_code=400, detail="Данный пользователь не найден")
+
+
+@router.get("/")
+async def get_all_users(session: AsyncSession = Depends(get_async_session)) -> list[ResponseAllUsers]:
+    res = await user_repository.get_all_by_fields(session=session, data=["id", "tg_user_id", "is_block_bot"])
+    if res:
+        response = [ResponseAllUsers(user_id=obj.id, tg_user_id=obj.tg_user_id, is_block_bot=obj.is_block_bot)
+                    for obj in res]
+        return response
+    else:
+        return []
+
 
 @router.post("/send_grpc_message")
-async def get_last_messages(text: str):
-    async with grpc.aio.insecure_channel('localhost:50051') as channel:
-        stub = message_pb2_grpc.MessageServiceStub(channel)
-        for el in range(10):
-            response = await stub.SendMessage(message_pb2.Message(text=f"elem {str(el)}"))
-    return response.text
+async def get_last_messages(text: str, tg_user_id: int):
+    return await send_grpc_to_tg(text=text, tg_user_id=tg_user_id)
 
+# 548349299

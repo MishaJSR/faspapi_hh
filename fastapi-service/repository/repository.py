@@ -62,11 +62,14 @@ class SQLAlchemyRepository(AbstractRepository):
 
     @async_sqlalchemy_exceptions
     async def delete_fields(self, **kwargs):
+
         conditions = [getattr(self.model, key) == value for key, value in kwargs.get("delete_filter").items()]
         session = kwargs.get("session")
         stmt = delete(self.model).where(and_(*conditions)).returning(self.model.id)
-        await session.execute(stmt)
+        res = await session.execute(stmt)
         await session.commit()
+        res_values = [el._data for el in res.fetchall()]
+        return [AlchemyDataObject("id", value) for value in res_values]
 
     @async_sqlalchemy_exceptions
     async def update_fields(self, **kwargs) -> list[AlchemyDataObject]:
