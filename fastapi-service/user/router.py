@@ -30,6 +30,7 @@ async def get_last_messages(data=Depends(ConstructUser), session: AsyncSession =
 async def get_last_messages(text: str):
     async with grpc.aio.insecure_channel('localhost:50051') as channel:
         stub = message_pb2_grpc.MessageServiceStub(channel)
-        response = await stub.SendMessage(message_pb2.Message(text=text))
+        for el in range(10):
+            response = await stub.SendMessage(message_pb2.Message(text=f"elem {str(el)}"))
     return response.text
 
