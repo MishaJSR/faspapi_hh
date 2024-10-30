@@ -41,11 +41,11 @@ async def on_shutdown(bot):
 
 
 async def main():
-    bot, dp = await set_bot()
+    bot, dp = await create_bot()
     await asyncio.gather(serve(bot), start_bot(bot, dp))
 
 
-async def set_bot():
+async def create_bot():
     setup_logging()
     storage = get_storage()
     bot = Bot(token=base_settings.get_token())

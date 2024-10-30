@@ -53,14 +53,14 @@ class ParserHH(metaclass=ParserMeta):
         while True:
             logging.info("Start circle Parser HH")
             div_elements = self.brouser.find_elements(By.XPATH, '//div[contains(@class, "vacancy-info")]')
-            links = self.get_links(div_elements)
+            links = self.get_data(div_elements)
             new_links = []
             for link in links:
                 if link not in self.lst_of_vacancies:
                     self.lst_of_vacancies.append(link)
                     new_links.append(link)
             if new_links:
-                loop.run_until_complete(self.get_new_links(links))
+                loop.run_until_complete(self.update_db(links))
             thread_refresh = threading.Thread(target=self.refresh_browser)
             self.is_run_refresh = True
             thread_refresh.start()
@@ -77,7 +77,7 @@ class ParserHH(metaclass=ParserMeta):
                 logging.info("HH Clear vac list")
             counter += 1
 
-    def get_links(self, div_elements) -> list:
+    def get_data(self, div_elements) -> list:
         links = []
         for div in div_elements[2:7]:
             is_no_exp = False
@@ -110,7 +110,7 @@ class ParserHH(metaclass=ParserMeta):
             break
 
     @staticmethod
-    async def get_new_links(links):
+    async def update_db(links):
         for link in links:
             is_new = await hh_pusher_to_db(new_vac=link)
             if is_new:

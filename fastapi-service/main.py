@@ -24,7 +24,7 @@ def setup_logging():
 
 setup_logging()
 
-app = FastAPI(title="Trading App")
+app = FastAPI(title="Parser App")
 
 app.add_middleware(
     CORSMiddleware,
