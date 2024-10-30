@@ -1,7 +1,7 @@
 import logging
 
 from grpc_utils.utils import send_grpc_to_tg
-from subscriber.utils import send_first_matches_by_sub
+from workers.utils import send_first_matches_by_sub
 from vacancy.models import vac_repository
 from repository.utils import connection
 from subscriber.models import sub_repository

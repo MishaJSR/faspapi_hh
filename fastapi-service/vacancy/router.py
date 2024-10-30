@@ -6,7 +6,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from database import get_async_session
 from vacancy.models import vac_repository
 from workers.hh.ParserHH import ParserHH
-from workers.Reporter import Reporter
+from workers.reporter.Reporter import Reporter
 
 router = APIRouter(
     prefix="/vacancy",

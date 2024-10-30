@@ -1,20 +1,18 @@
+import asyncio
 import logging
 import threading
 import time
 import random
-from threading import Lock
+
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
 
 from vacancy.utils import hh_pusher_to_db
-from subscriber.utils import send_first_matches_by_sub
-from workers.Reporter import Reporter
+from workers.utils import send_first_matches_by_sub
+from workers.reporter.Reporter import Reporter
 from workers.hh.Observer import Observer, Subject
 from workers.hh.utils import get_data
-
-
-
 
 
 class ParserHH(Subject):
