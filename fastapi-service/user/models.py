@@ -1,5 +1,6 @@
 from datetime import datetime
 from sqlalchemy import (TIMESTAMP, Boolean, Column, Integer, String, BigInteger)
+from sqlalchemy.orm import relationship
 
 from database import Base
 from repository.repository import SQLAlchemyRepository
@@ -13,6 +14,7 @@ class User(Base):
     is_block_bot: bool = Column(Boolean, default=False, nullable=False)
     registered_at = Column(TIMESTAMP, default=datetime.utcnow)
 
+    subscribers = relationship("Subscriber", back_populates="user")
 
 class UserRepository(SQLAlchemyRepository):
     model = User

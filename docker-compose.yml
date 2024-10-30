@@ -2,12 +2,11 @@ services:
 
   tg-bot:
     image: "bot"
-    container_name: "tg-service"
     stop_signal: SIGINT
     build:
       context: ./bot-service
 #      dockerfile: .Dockerfile
-    depends_on:
+    links:
       - pg-database
       - redis-db
     command: >
@@ -24,7 +23,7 @@ services:
     stop_signal: SIGINT
     build:
       context: ./fastapi-service
-    depends_on:
+    links:
       - pg-database
     stdin_open: true
     command: >
@@ -40,7 +39,6 @@ services:
 
   pg-database:
     image: postgres:14
-    container_name: "pg-db"
     ports:
       - "5432:5432"
     restart: always
@@ -60,6 +58,21 @@ services:
         max-size: "200k"
         max-file: "10"
 
+  pgadmin:
+    container_name: pgadmin_container
+    image: dpage/pgadmin4
+    environment:
+      PGADMIN_DEFAULT_EMAIL: "mixan_45@mail.ru"
+      PGADMIN_DEFAULT_PASSWORD: "postgres"
+    volumes:
+      - pgadmin:/var/lib/pgadmin
+
+    ports:
+      - "5050:80"
+    links:
+      - pg-database
+    restart: unless-stopped
+
 
   redis-db:
     image: redis:6.2-alpine
@@ -72,6 +85,8 @@ services:
       - bot-service/.env
     volumes:
       - cache:/data
+
 volumes:
   cache: { }
   pgdata: { }
+  pgadmin: { }
