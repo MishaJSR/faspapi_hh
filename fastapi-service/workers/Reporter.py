@@ -1,6 +1,4 @@
-import asyncio
 import logging
-from threading import Lock
 
 from grpc_utils.utils import send_grpc_to_tg
 from subscriber.utils import send_first_matches_by_sub
@@ -16,7 +14,7 @@ class Reporter(Observer):
         self.is_run = False
         self.background_tasks = set()
 
-    def __str__(self):
+    def __str__(self) -> str:
         return "Reporter"
 
     async def update(self, subject: Subject) -> None:
@@ -34,7 +32,7 @@ class Reporter(Observer):
 
 
     @connection
-    async def check_updates(self, session=None, matching="old") -> None:
+    async def check_updates(self, session=None) -> None:
         sub_list = await sub_repository.get_all_by_fields(session=session,
                                                           data=["sub_tag", "is_no_exp", "is_remote", "user_tg_id"])
         if sub_list:
@@ -47,7 +45,7 @@ class Reporter(Observer):
                                                                        f"{el.url}\n"
                                                                        f"{el.salary}\n"
                                                                        f"{el.employer}")
-                    logging.info(f"Send {len(res)} message matching {matching}")
+                    logging.info(f"Send {len(res)} message matching old")
                 else:
                     logging.info("Send no message matching old")
 
