@@ -3,38 +3,38 @@ import logging
 from threading import Lock
 
 from grpc_utils.utils import send_grpc_to_tg
+from subscriber.utils import send_first_matches_by_sub
 from vacancy.models import vac_repository
 from repository.utils import connection
 from subscriber.models import sub_repository
-from subscriber.utils import bot
+from vacancy.utils import hh_pusher_to_db
+from workers.hh.Observer import Observer, Subject
 
 
-class ReporterMeta(type):
-    _instances = {}
-    _lock: Lock = Lock()
-
-    def __call__(cls, *args, **kwargs):
-        with cls._lock:
-            if cls not in cls._instances:
-                instance = super().__call__(*args, **kwargs)
-                cls._instances[cls] = instance
-        return cls._instances[cls]
-
-
-class Reporter(metaclass=ReporterMeta):
+class Reporter(Observer):
     def __init__(self) -> None:
         self.is_run = False
         self.background_tasks = set()
 
-    def start_send(self) -> None:
+    def __str__(self):
+        return "Reporter"
+
+    async def update(self, subject: Subject) -> None:
+        logging.info(subject.new_links)
+        logging.info(f"Reporter: Reacted to the event, get {len(subject.new_links)} items")
+        for link in subject.new_links:
+            is_new = await hh_pusher_to_db(new_vac=link)
+            if is_new:
+                await send_first_matches_by_sub(link=link)
+
+    async def start_send(self) -> None:
         if not self.is_run:
-            task = asyncio.create_task(self.check_updates())
-            self.background_tasks.add(task)
-            task.add_done_callback(self.background_tasks.discard)
+            await self.check_updates()
             self.is_run = True
 
+
     @connection
-    async def check_updates(self, session=None) -> None:
+    async def check_updates(self, session=None, matching="old") -> None:
         sub_list = await sub_repository.get_all_by_fields(session=session,
                                                           data=["sub_tag", "is_no_exp", "is_remote", "user_tg_id"])
         if sub_list:
@@ -47,7 +47,7 @@ class Reporter(metaclass=ReporterMeta):
                                                                        f"{el.url}\n"
                                                                        f"{el.salary}\n"
                                                                        f"{el.employer}")
-                    logging.info(f"Send {len(res)} message matching old")
+                    logging.info(f"Send {len(res)} message matching {matching}")
                 else:
                     logging.info("Send no message matching old")
 

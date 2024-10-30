@@ -1,9 +1,11 @@
+import asyncio
+
 from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from database import get_async_session
 from vacancy.models import vac_repository
-from workers.ParserHH import ParserHH
+from workers.hh.ParserHH import ParserHH
 from workers.Reporter import Reporter
 
 router = APIRouter(
@@ -15,10 +17,10 @@ router = APIRouter(
 @router.post("/start_pooling")
 async def start_pooling(key: str):
     if key == "private":
-        parser_hh = ParserHH()
-        parser_hh.start_parsing()
         reporter = Reporter()
-        reporter.start_send()
+        parser_hh = ParserHH(reporter=reporter)
+        asyncio.create_task(parser_hh.start_pooling())
+        await reporter.start_send()
         return []
 
 
