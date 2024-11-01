@@ -1,9 +1,9 @@
 import asyncio
 import logging
 
+from grpc_utils.grpc_connection import send_grpc_to_tg
 from models.schemas import ConstructVacancy
 from repository.utils import connection
-from grpc_utils.utils import send_grpc_to_tg
 from models.models import sub_repository, vac_repository
 
 

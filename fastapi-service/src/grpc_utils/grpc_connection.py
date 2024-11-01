@@ -1,5 +1,4 @@
 import grpc
-import logging
 
 from grpc_utils import message_pb2_grpc, message_pb2
 

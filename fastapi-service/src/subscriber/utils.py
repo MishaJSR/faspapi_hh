@@ -1,6 +1,7 @@
+import asyncio
 import logging
 
-from grpc_utils.utils import send_grpc_to_tg
+from grpc_utils.grpc_connection import send_grpc_to_tg
 from vacancy.models import vac_repository
 from repository.utils import connection
 
@@ -23,11 +24,11 @@ async def send_first_matches_by_vac(session=None, target: str = None, is_no_exp:
         contain_field=contain_field
     )
     if res:
-        for vac in res:
-            await send_grpc_to_tg(tg_user_id=sub_id, text=f"{vac.name}\n"
-                                                          f"{vac.url}\n"
-                                                          f"{vac.salary}\n"
-                                                          f"{vac.employer}")
+        await asyncio.gather(*(send_grpc_to_tg(name=el.name,
+                                               url=el.url,
+                                               salary=el.salary,
+                                               employer=el.employer,
+                                               tg_user_id=sub_id, ) for el in res), )
         logging.info(f"send {len(res)} matches")
     else:
         logging.info(f"No matches")

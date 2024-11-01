@@ -2,7 +2,6 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 from fastapi.responses import JSONResponse
 
-from grpc_utils.utils import send_grpc_to_tg
 from user.models import user_repository
 from user.schemas import ConstructUser, ResponseAllUsers
 from database import get_async_session
@@ -48,8 +47,3 @@ async def get_all_users(session: AsyncSession = Depends(get_async_session)) -> l
         return []
 
 
-@router.post("/send_grpc_message")
-async def get_last_messages(text: str, tg_user_id: int):
-    return await send_grpc_to_tg(text=text, tg_user_id=tg_user_id)
-
-# 548349299
