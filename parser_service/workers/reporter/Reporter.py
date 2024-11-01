@@ -1,10 +1,11 @@
 import logging
 
 from grpc_utils.utils import send_grpc_to_tg
-from workers.utils import send_first_matches_by_sub, hh_pusher_to_db
+from workers.utils import send_first_matches_by_sub
 from vacancy.models import vac_repository
 from repository.utils import connection
 from subscriber.models import sub_repository
+from workers.utils import hh_pusher_to_db
 from workers.hh.Observer import Observer, Subject, SingletonMeta
 
 

@@ -7,7 +7,8 @@ from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
 
-from workers.utils import send_first_matches_by_sub, hh_pusher_to_db
+from vacancy.utils import hh_pusher_to_db
+from workers.utils import send_first_matches_by_sub
 from workers.reporter.Reporter import Reporter
 from workers.hh.Observer import Observer, Subject, SingletonMeta
 from workers.hh.utils import get_data

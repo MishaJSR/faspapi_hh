@@ -4,8 +4,8 @@ from sqlalchemy import engine_from_config
 from sqlalchemy import pool
 
 from alembic import context
-from base_settings import base_settings
-from src.database import metadata
+from src.base_settings import base_settings
+from src.database import metadata, Base
 from src.user.models import *
 
 
