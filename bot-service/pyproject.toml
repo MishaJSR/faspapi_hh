@@ -1,0 +1,34 @@
+[tool.poetry]
+name = "hh-parser"
+version = "0.1.0"
+description = ""
+authors = ["Michail S <mixan_45@mail.ru>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+fastapi = "^0.115.2"
+uvicorn = "^0.31.1"
+selenium = "^4.25.0"
+sqlalchemy = "^2.0.35"
+python-dotenv = "^1.0.1"
+pydantic-settings = "^2.5.2"
+asyncpg = "^0.29.0"
+psycopg2-binary = "^2.9.9"
+betterlogging = "^1.0.0"
+python-telegram-bot = "^21.6"
+alembic = "^1.13.3"
+requests = "^2.32.3"
+jupyter = "^1.1.1"
+spacy = "^3.8.2"
+transformers = "^4.45.2"
+pandas = "^2.2.3"
+loguru = "^0.7.2"
+validators = "^0.34.0"
+aiogram = "^3.13.1"
+redis = "^5.1.1"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
