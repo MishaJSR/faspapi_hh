@@ -6,10 +6,10 @@ from vacancy.models import vac_repository
 from repository.utils import connection
 from subscriber.models import sub_repository
 from vacancy.utils import hh_pusher_to_db
-from workers.hh.Observer import Observer, Subject
+from workers.hh.Observer import Observer, Subject, SingletonMeta
 
 
-class Reporter(Observer):
+class Reporter(Observer, metaclass=SingletonMeta):
     def __init__(self) -> None:
         self.is_run = False
         self.background_tasks = set()

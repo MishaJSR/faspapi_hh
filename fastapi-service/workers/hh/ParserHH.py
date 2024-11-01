@@ -11,11 +11,11 @@ from selenium.webdriver.common.by import By
 from vacancy.utils import hh_pusher_to_db
 from workers.utils import send_first_matches_by_sub
 from workers.reporter.Reporter import Reporter
-from workers.hh.Observer import Observer, Subject
+from workers.hh.Observer import Observer, Subject, SingletonMeta
 from workers.hh.utils import get_data
 
 
-class ParserHH(Subject):
+class ParserHH(Subject, metaclass=SingletonMeta):
     url: str = 'https://hh.ru/search/vacancy?area=1&ored_clusters=true&order_by=publication_time'
 
     def __init__(self, reporter: Reporter) -> None:

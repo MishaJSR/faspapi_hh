@@ -3,7 +3,7 @@ from abc import ABC, abstractmethod
 from threading import Lock
 
 
-class SingletonMeta(ABC.__class__):
+class SingletonMeta(type):
     _instances = {}
     _lock: Lock = Lock()
 
@@ -14,7 +14,7 @@ class SingletonMeta(ABC.__class__):
                 cls._instances[cls] = instance
         return cls._instances[cls]
 
-class Subject(ABC, metaclass=SingletonMeta):
+class Subject(ABC.__class__):
     """
     Интерфейс издателя объявляет набор методов для управлениями подписчиками.
     """
@@ -32,7 +32,7 @@ class Subject(ABC, metaclass=SingletonMeta):
         pass
 
 
-class Observer(ABC, metaclass=SingletonMeta):
+class Observer(ABC.__class__):
     """
     Интерфейс Наблюдателя объявляет метод уведомления, который издатели
     используют для оповещения своих подписчиков.
