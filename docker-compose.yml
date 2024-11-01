@@ -22,7 +22,7 @@ services:
     image: "fastapi-service"
     stop_signal: SIGINT
     build:
-      context: ./fastapi-service
+      context: ./fastapi-service/src
     links:
       - pg-database
     stdin_open: true
