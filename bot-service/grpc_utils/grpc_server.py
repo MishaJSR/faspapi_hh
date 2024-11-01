@@ -2,8 +2,8 @@ import logging
 
 import grpc
 
-from grpc_service import message_pb2_grpc, message_pb2
-from grpc_service.MessageService import MessageService
+from grpc_utils import message_pb2_grpc, message_pb2
+from grpc_utils.MessageService import MessageService
 
 
 async def serve(bot):

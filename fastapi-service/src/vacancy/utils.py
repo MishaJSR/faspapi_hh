@@ -1,4 +1,3 @@
-import asyncio
 import logging
 
 from vacancy.models import vac_repository

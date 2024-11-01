@@ -1,6 +1,6 @@
 import grpc
 
-from grpc_service import message_pb2_grpc, message_pb2
+from grpc_utils import message_pb2_grpc, message_pb2
 
 
 async def send_grpc_to_tg(text: str, tg_user_id: int):

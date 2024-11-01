@@ -3,12 +3,7 @@ import logging
 from grpc_utils.utils import send_grpc_to_tg
 from vacancy.models import vac_repository
 from repository.utils import connection
-from subscriber.models import sub_repository
 
-from base_settings import base_settings
-from telegram import Bot
-
-bot = Bot(token=base_settings.get_api_token())
 
 
 @connection

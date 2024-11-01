@@ -8,7 +8,6 @@ class Settings(BaseSettings):
     POSTGRES_DB: str
     POSTGRES_USER: str
     POSTGRES_PASSWORD: str
-    TG_KEY: str
 
     def get_database_url(self):
         return URL.create(
@@ -20,8 +19,6 @@ class Settings(BaseSettings):
             port=self.POSTGRES_PORT,
         ).render_as_string(hide_password=False)
 
-    def get_api_token(self):
-        return self.TG_KEY
 
 
 base_settings = Settings(_env_file=".env", _env_file_encoding="utf-8")

@@ -2,7 +2,6 @@ from sqlalchemy import (Boolean, Column, ForeignKey, Integer, String)
 from sqlalchemy.orm import relationship
 
 from repository.repository import SQLAlchemyRepository
-
 from database import Base
 
 

@@ -1,9 +1,7 @@
-import grpc
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 from fastapi.responses import JSONResponse
 
-from grpc_service import message_pb2_grpc, message_pb2
 from grpc_utils.utils import send_grpc_to_tg
 from user.models import user_repository
 from user.schemas import ConstructUser, ResponseAllUsers

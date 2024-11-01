@@ -2,7 +2,7 @@ import logging
 
 from aiogram import Bot
 
-from grpc_service import message_pb2_grpc, message_pb2
+from grpc_utils import message_pb2_grpc, message_pb2
 
 
 class MessageService(message_pb2_grpc.MessageServiceServicer):

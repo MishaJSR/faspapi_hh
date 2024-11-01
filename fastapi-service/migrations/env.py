@@ -5,10 +5,8 @@ from sqlalchemy import pool
 
 from alembic import context
 from base_settings import base_settings
-from database import Base, metadata
-from vacancy.models import *
-from subscriber.models import *
-from user.models import *
+from src.database import metadata
+from src.user.models import *
 
 
 

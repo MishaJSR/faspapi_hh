@@ -1,7 +1,6 @@
 import logging
 import asyncio
 
-import grpc
 from aiogram import Bot, Dispatcher
 from aiogram.fsm.storage.memory import MemoryStorage
 from aiogram.types import BotCommandScopeAllPrivateChats, BotCommand
@@ -9,7 +8,7 @@ from aiogram.fsm.storage.redis import RedisStorage, DefaultKeyBuilder
 import betterlogging as bl
 
 from base_settings import base_settings
-from grpc_service.grpc_server import serve
+from grpc_utils.grpc_server import serve
 from handlers.user.user_main_router import user_main_router
 
 def get_storage():

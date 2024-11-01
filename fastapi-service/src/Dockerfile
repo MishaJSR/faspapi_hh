@@ -38,4 +38,4 @@ COPY pyproject.toml poetry.lock ./
 RUN poetry update
 RUN poetry install
 
-COPY . .
+COPY ../.. .
