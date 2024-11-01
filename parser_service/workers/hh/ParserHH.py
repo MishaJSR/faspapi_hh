@@ -1,3 +1,4 @@
+import asyncio
 import logging
 import threading
 import time
@@ -7,8 +8,7 @@ from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
 
-from vacancy.utils import hh_pusher_to_db
-from workers.utils import send_first_matches_by_sub
+from workers.utils import hh_pusher_to_db, send_first_matches_by_sub
 from workers.reporter.Reporter import Reporter
 from workers.hh.Observer import Observer, Subject, SingletonMeta
 from workers.hh.utils import get_data
@@ -44,9 +44,9 @@ class ParserHH(Subject, metaclass=SingletonMeta):
     async def start_pooling(self) -> None:
         logging.info("Start Parser HH")
         self.brouser.get(self.url)
-        time.sleep(10)
+        await asyncio.sleep(10)
         while True:
-            logging.info("Start circle Parser HH")
+            logging.info("Parser HH is working ...")
             div_elements = self.brouser.find_elements(By.XPATH, '//div[contains(@class, "vacancy-info")]')
             links = get_data(div_elements)
             self.new_links = []
@@ -59,7 +59,7 @@ class ParserHH(Subject, metaclass=SingletonMeta):
             thread_refresh = threading.Thread(target=self.refresh_browser)
             self.is_run_refresh = True
             thread_refresh.start()
-            time.sleep(random.randint(5, 8))
+            await asyncio.sleep(random.randint(5, 8))
             self.restart_brouser(thread_refresh)
             if len(self.lst_of_vacancies) > 20:
                 self.lst_of_vacancies = []

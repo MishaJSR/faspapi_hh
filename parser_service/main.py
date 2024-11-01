@@ -21,7 +21,7 @@ def setup_logging():
 async def main():
     reporter = Reporter()
     parser_hh = ParserHH(reporter=reporter)
-    await asyncio.gather(parser_hh.start_pooling(), reporter.start_send())
+    await asyncio.gather(parser_hh.start_pooling(), reporter.check_updates())
 
 
 if __name__ == "__main__":
