@@ -8,6 +8,7 @@ class Settings(BaseSettings):
     POSTGRES_DB: str
     POSTGRES_USER: str
     POSTGRES_PASSWORD: str
+    GRPC_HOST: str
 
     def get_database_url(self):
         return URL.create(
@@ -18,6 +19,9 @@ class Settings(BaseSettings):
             database=self.POSTGRES_DB,
             port=self.POSTGRES_PORT,
         ).render_as_string(hide_password=False)
+
+    def get_grpc_host(self):
+        return self.GRPC_HOST
 
 
 
