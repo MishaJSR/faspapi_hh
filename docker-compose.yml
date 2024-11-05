@@ -25,6 +25,7 @@ services:
       context: ./fastapi-service/src
     links:
       - pg-database
+      - tg-bot
     stdin_open: true
     command: >
       sh -c "poetry run python3 -m main"
@@ -36,6 +37,25 @@ services:
       options:
         max-size: "200k"
         max-file: "10"
+
+  parsers:
+    image: "parsers"
+    stop_signal: SIGINT
+    build:
+      context: ./parser_service
+    #      dockerfile: .Dockerfile
+    links:
+      - tg-bot
+    command: >
+      sh -c "poetry run python3 -m main"
+    restart: always
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "200k"
+        max-file: "10"
+
+
 
   pg-database:
     image: postgres:14

@@ -9,7 +9,7 @@ from workers.reporter.Reporter import Reporter
 
 def setup_logging():
     log_level = logging.INFO
-    bl.basic_colorized_config(level=log_level)
+    bl.basic_colorized_config(level=logging.INFO)
 
     logging.basicConfig(
         level=log_level,
