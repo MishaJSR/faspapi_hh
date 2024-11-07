@@ -12,6 +12,7 @@ class User(Base):
     id = Column(Integer, primary_key=True)
     tg_user_id = Column(BigInteger, nullable=False, unique=True)
     is_block_bot: bool = Column(Boolean, default=False, nullable=False)
+    is_auth: bool = Column(Boolean, default=False, nullable=False)
     registered_at = Column(TIMESTAMP, default=datetime.utcnow)
 
     subscribers = relationship("Subscriber", back_populates="user")

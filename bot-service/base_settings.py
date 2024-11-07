@@ -9,9 +9,10 @@ class Settings(BaseSettings):
     USE_REDIS: bool
     TG_KEY: str
     GRPC_HOST: str
+    AMPQ_HOST: str
 
     def get_redis_storage(self):
-        if self.redis_pass:
+        if self.REDISPASSWORD:
             return f"redis://:{self.REDISPASSWORD}@{self.REDISHOST}:{self.REDISPORT}/0"
         else:
             return f"redis://{self.REDISHOST}:{self.REDISPORT}/0"
@@ -25,5 +26,8 @@ class Settings(BaseSettings):
     def get_grpc_host(self):
         return self.GRPC_HOST
 
+    def get_ampq_host(self):
+        return self.AMPQ_HOST
 
-base_settings = Settings(_env_file=".env", _env_file_encoding="utf-8")
+
+base_settings = Settings(_env_file=".env_dev", _env_file_encoding="utf-8")

@@ -13,5 +13,6 @@ def async_sqlalchemy_exceptions(func):
             return await func(*args, **kwargs)
         except Exception as e:
             logging.error(e)
+            raise e
 
     return wrapper

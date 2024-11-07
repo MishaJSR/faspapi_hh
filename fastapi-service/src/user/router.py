@@ -13,7 +13,8 @@ router = APIRouter(
 
 
 @router.post("/check_or_create")
-async def get_last_messages(data=Depends(ConstructUser), session: AsyncSession = Depends(get_async_session)) -> int:
+async def get_last_messages(data = Depends(ConstructUser),
+                            session = Depends(get_async_session)) -> int | HTTPException:
     field_filter = {
         "tg_user_id": data.tg_user_id
     }
@@ -21,11 +22,16 @@ async def get_last_messages(data=Depends(ConstructUser), session: AsyncSession =
     if res:
         raise HTTPException(status_code=400, detail="Данный пользователь уже зарегистрирован")
     else:
-        return await user_repository.add_object(session=session, data=data.model_dump())
+        try:
+            result = await user_repository.add_object(session=session, data=data.model_dump())
+            return result
+        except:
+            raise HTTPException(status_code=400, detail="Данный пользователь уже зарегистрирован")
 
 
 @router.post("/remove_user")
-async def get_last_messages(tg_user_id: int, session: AsyncSession = Depends(get_async_session)) -> int:
+async def get_last_messages(tg_user_id: int,
+                            session: AsyncSession = Depends(get_async_session)) -> JSONResponse | HTTPException:
     delete_filter = {
         "tg_user_id": tg_user_id
     }
@@ -38,11 +44,10 @@ async def get_last_messages(tg_user_id: int, session: AsyncSession = Depends(get
 
 @router.get("/")
 async def get_all_users(session: AsyncSession = Depends(get_async_session)) -> list[ResponseAllUsers]:
-    res = await user_repository.get_all_by_fields(session=session, data=["id", "tg_user_id", "is_block_bot"])
+    res = await user_repository.get_all_by_fields(session=session, data=["id", "tg_user_id", "is_block_bot", "is_auth"])
     if res:
-        response = [ResponseAllUsers(user_id=obj.id, tg_user_id=obj.tg_user_id, is_block_bot=obj.is_block_bot)
+        return [ResponseAllUsers(user_id=obj.id, tg_user_id=obj.tg_user_id, is_block_bot=obj.is_block_bot)
                     for obj in res]
-        return response
     else:
         return []
 

@@ -8,8 +8,10 @@ from aiogram.fsm.storage.redis import RedisStorage, DefaultKeyBuilder
 import betterlogging as bl
 
 from base_settings import base_settings
-from grpc_utils.grpc_server import serve
+from grpc_utils.grpc_server import serve_grpc
 from handlers.user.user_main_router import user_main_router
+from rabbit_utils.Rabbit import Rabbit
+
 
 def get_storage():
     if base_settings.is_use_redis():
@@ -31,17 +33,18 @@ def setup_logging():
     )
 
 
-async def on_startup():
+def on_startup():
     logging.info("Starting bot")
 
 
-async def on_shutdown(bot):
+def on_shutdown(bot):
     logging.info("Shutdown bot")
 
 
 async def main():
     bot, dp = await create_bot()
-    await asyncio.gather(serve(bot), start_bot(bot, dp))
+    rabbit = Rabbit()
+    await asyncio.gather(serve_grpc(bot), rabbit.connect(), start_bot(bot, dp))
 
 
 async def create_bot():
@@ -64,4 +67,4 @@ async def start_bot(bot, dp):
 
 if __name__ == "__main__":
     setup_logging()
-    asyncio.run(main()) #dev_bot
+    asyncio.run(main())

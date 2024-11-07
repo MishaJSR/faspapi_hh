@@ -8,5 +8,6 @@ user_main_router = Router()
 
 @user_main_router.message(CommandStart())
 async def user_start(message: types.Message, state: FSMContext):
-    await message.answer("Привет")
+    await message.answer(f"Привет {message.from_user.full_name}\n"
+                         f"Для продолжения необходимо авторизироваться")
 
