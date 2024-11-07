@@ -44,7 +44,6 @@ class Rabbit(metaclass=RabbitSingletonMeta):
                 task = asyncio.create_task(self.listen_to_queue(queue, queue_name))
                 tasks.append(task)
             await asyncio.gather(*tasks)
-        logging.info("end")
 
     async def close(self):
         if self._connection and not self._connection.is_closed:
@@ -64,4 +63,5 @@ class Rabbit(metaclass=RabbitSingletonMeta):
         construct_factory = self._queue.get(queue_name)
         if not construct_factory:
             logging.info(f"Received from unsigned query {queue_name}: {data}")
-        await construct_factory.get_custom_object(data=data).operation()
+        else:
+            await construct_factory.get_custom_object(data=data).operation()

@@ -10,11 +10,11 @@ async def main() -> None:
     )
 
     async with connection:
-        routing_key = "from_fastapi"
+        routing_key = "from_faddfstapi"
 
         channel = await connection.channel()
         some_dict = {
-            "tg_user_id": 1232
+            "tg_user_id": "fdgf"
         }
         message_body = json.dumps(some_dict)
 
