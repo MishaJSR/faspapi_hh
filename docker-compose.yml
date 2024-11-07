@@ -5,7 +5,7 @@ services:
     stop_signal: SIGINT
     build:
       context: ./bot-service
-#      dockerfile: .Dockerfile
+    #      dockerfile: .Dockerfile
     links:
       - pg-database
       - redis-db
@@ -24,7 +24,6 @@ services:
     build:
       context: ./fastapi-service/src
     links:
-      - pg-database
       - tg-bot
     stdin_open: true
     command: >
@@ -43,7 +42,6 @@ services:
     stop_signal: SIGINT
     build:
       context: ./parser_service
-    #      dockerfile: .Dockerfile
     links:
       - tg-bot
     command: >
@@ -55,7 +53,15 @@ services:
         max-size: "200k"
         max-file: "10"
 
-
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    container_name: 'rabbitmq'
+    ports:
+      - 5672:5672
+      - 15672:15672
+    volumes:
+      - ~/.docker-conf/rabbitmq/data/:/var/lib/rabbitmq/
+      - ~/.docker-conf/rabbitmq/log/:/var/log/rabbitmq
 
   pg-database:
     image: postgres:14
