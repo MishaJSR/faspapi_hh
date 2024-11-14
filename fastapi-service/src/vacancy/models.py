@@ -1,5 +1,6 @@
+import uuid
 from datetime import datetime
-from sqlalchemy import (TIMESTAMP, Boolean, Column, Integer, String)
+from sqlalchemy import (TIMESTAMP, Boolean, Column, Integer, String, UUID)
 
 from database import Base
 from repository.repository import SQLAlchemyRepository
@@ -8,7 +9,7 @@ from repository.repository import SQLAlchemyRepository
 class Vacancy(Base):
     __tablename__ = "vacancy"
 
-    id = Column(Integer, primary_key=True)
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4())
     name = Column(String, nullable=False)
     url = Column(String, nullable=False)
     salary = Column(String, nullable=False)

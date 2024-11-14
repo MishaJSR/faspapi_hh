@@ -11,7 +11,7 @@ class MessageService(message_pb2_grpc.MessageServiceServicer):
 
     async def SendMessage(self, request, context):
         try:
-            await self.bot.send_message(chat_id=request.tg_user_id, text=request.text)
+            await self.bot.send_message(chat_id=int(request.tg_user_id), text=request.text)
             logging.info(f"Get message for {request.tg_user_id}")
         except:
             logging.info(f"Cant send to user {request.tg_user_id}")

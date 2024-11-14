@@ -8,14 +8,14 @@ from repository.utils import connection
 
 
 @connection
-async def send_first_matches_by_vac(session=None, target: str = None, is_no_exp: bool = None,
-                                    is_remote: bool = None, sub_id: int = None):
+async def send_first_matches_by_vac(session=None, sub_tag: str = None, is_no_exp: bool = None,
+                                    is_remote: bool = None, user_tg_id: str = None):
     filed_filter = {
         "is_no_exp": is_no_exp,
         "is_remote": is_remote
     }
     contain_field = {
-        "name": target.lower(),
+        "name": sub_tag.lower(),
     }
     res = await vac_repository.get_all_by_one_contain_field(
         session=session,
@@ -28,7 +28,7 @@ async def send_first_matches_by_vac(session=None, target: str = None, is_no_exp:
                                                url=el.url,
                                                salary=el.salary,
                                                employer=el.employer,
-                                               tg_user_id=sub_id, ) for el in res), )
+                                               tg_user_id=user_tg_id) for el in res))
         logging.info(f"send {len(res)} matches")
     else:
         logging.info(f"No matches")

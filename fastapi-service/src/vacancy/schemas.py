@@ -1,3 +1,4 @@
+import uuid
 from datetime import datetime
 from typing import Optional
 
@@ -29,7 +30,7 @@ class VacPaginationModel(BaseModel):
 
 
 class ResponseAllVac(BaseModel):
-    id: int
+    id: uuid.UUID
     name: str
     url: str
     salary: str

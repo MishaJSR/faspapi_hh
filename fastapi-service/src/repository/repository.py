@@ -11,7 +11,7 @@ from repository.utils import AlchemyDataObject, async_session_maker_decorator_se
 
 class AbstractRepository(ABC):
     @abstractmethod
-    async def add_object(self, **kwargs) -> int:
+    async def add_object(self, **kwargs) -> dict:
         raise NotImplementedError
 
     @abstractmethod
@@ -35,12 +35,13 @@ class SQLAlchemyRepository(AbstractRepository):
     model: None
 
     @async_sqlalchemy_exceptions
-    async def add_object(self, **kwargs) -> int:
+    async def add_object(self, **kwargs) -> dict:
         session = kwargs.get("session")
         stmt = insert(self.model).values(**kwargs.get("data")).returning(self.model.id)
-        res = await session.execute(stmt)
+        result = await session.execute(stmt)
         await session.commit()
-        return res.scalar_one()
+        result = result.mappings().first()
+        return dict(result)
 
     @async_sqlalchemy_exceptions
     async def get_all_by_fields(self, **kwargs) -> Union[list[dict], dict, list]:
@@ -74,12 +75,17 @@ class SQLAlchemyRepository(AbstractRepository):
     async def delete_fields(self, **kwargs) -> list[dict]:
         conditions = [getattr(self.model, key) == value for key, value in kwargs.get("delete_filter").items()]
         session = kwargs.get("session")
+        is_one = kwargs.get("is_one")
         stmt = (delete(self.model).where(and_(*conditions))
                 .returning(*[getattr(self.model, key) for key, value in kwargs.get("delete_filter").items()]))
         result = await session.execute(stmt)
         await session.commit()
-        result = result.mappings().all()
-        return [dict(el) for el in result]
+        if is_one:
+            result = result.mappings().first()
+            return dict(result) if result else []
+        else:
+            result = result.mappings().all()
+            return [dict(el) for el in result] if result else []
 
     @async_sqlalchemy_exceptions
     async def update_fields(self, **kwargs) -> Union[list[dict], dict, list]:

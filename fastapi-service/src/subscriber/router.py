@@ -4,7 +4,8 @@ from starlette.responses import JSONResponse
 
 from database import get_async_session
 from subscriber.models import sub_repository
-from subscriber.schemas import ConstructSubscriber, ResponseAllSubs, ResponseUpdateSubs, SubPaginationModel
+from subscriber.schemas import ConstructSubscriber, ResponseAllSubs, ResponseUpdateSubs, SubPaginationModel, \
+    DeleteSubSchema, ResponseDeleteSubSchema
 from subscriber.utils import send_first_matches_by_vac
 from user.models import user_repository
 
@@ -33,21 +34,13 @@ async def subscribe_user(data=Depends(ConstructSubscriber), session: AsyncSessio
         sub = await sub_repository.add_object(session=session, data=data.model_dump())
     else:
         sub = await sub_repository.update_fields(session=session,
-                                                 update_data={
-                                                     "sub_tag": data.sub_tag,
-                                                     "is_no_exp": data.is_no_exp,
-                                                     "is_remote": data.is_remote,
-                                                     "user_tg_id": data.user_tg_id,
-                                                 },
+                                                 update_data=data.model_dump(),
                                                  update_filter={
                                                      "user_tg_id": data.user_tg_id,
                                                  },
                                                  is_one=True)
     if sub:
-        await send_first_matches_by_vac(target=data.sub_tag,
-                                        is_no_exp=data.is_no_exp,
-                                        is_remote=data.is_remote,
-                                        sub_id=data.user_tg_id)
+        await send_first_matches_by_vac(**data.model_dump())
         return ResponseUpdateSubs(**sub)
     else:
         raise HTTPException(status_code=400, detail="Невозможно открыть подписку")
@@ -64,13 +57,13 @@ async def get_all(data=Depends(SubPaginationModel), session: AsyncSession = Depe
         return []
 
 
-@router.post("/delete_sub")
-async def delete_sub(tg_user_id: int, session: AsyncSession = Depends(get_async_session)) -> list[ResponseAllSubs]:
+@router.post("/delete_sub", response_model=ResponseDeleteSubSchema)
+async def delete_sub(data=Depends(DeleteSubSchema), session: AsyncSession = Depends(get_async_session)):
     delete_filter = {
-        "user_tg_id": tg_user_id
+        "user_tg_id": data.tg_user_id
     }
-    res = await sub_repository.delete_fields(session=session, delete_filter=delete_filter)
+    res = await sub_repository.delete_fields(session=session, delete_filter=delete_filter, is_one=True)
     if res:
-        return JSONResponse(content={"message": "Пользователь удален"}, status_code=200)
+        return ResponseDeleteSubSchema(**res)
     else:
         raise HTTPException(status_code=400, detail="Данный пользователь не найден")
