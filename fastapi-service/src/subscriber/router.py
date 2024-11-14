@@ -39,7 +39,7 @@ async def subscribe_user(data=Depends(ConstructSubscriber), session: AsyncSessio
                                                  },
                                                  is_one=True)
     if sub:
-        await send_first_matches_by_vac(**data.model_dump())
+        await send_first_matches_by_vac(**data.model_dump(), session=session)
         return ResponseUpdateSubs(**sub)
     else:
         raise HTTPException(status_code=400, detail="Невозможно открыть подписку")

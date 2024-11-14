@@ -1,12 +1,12 @@
 import logging
+import uuid
 from abc import ABC, abstractmethod
 from typing import Union
 
 from sqlalchemy import insert, update, delete, and_, select, func, desc
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from repository.exceptions import async_sqlalchemy_exceptions
-from repository.utils import AlchemyDataObject, async_session_maker_decorator_select
+from repo.exceptions import async_sqlalchemy_exceptions
 
 
 class AbstractRepository(ABC):
@@ -27,8 +27,9 @@ class AbstractRepository(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    async def get_all_contain_fields(self, **kwargs) -> list:
+    async def get_all_by_one_contain_field(self, **kwargs) -> Union[list[dict], list]:
         raise NotImplementedError
+
 
 
 class SQLAlchemyRepository(AbstractRepository):
@@ -37,7 +38,7 @@ class SQLAlchemyRepository(AbstractRepository):
     @async_sqlalchemy_exceptions
     async def add_object(self, **kwargs) -> dict:
         session = kwargs.get("session")
-        stmt = insert(self.model).values(**kwargs.get("data")).returning(self.model.id)
+        stmt = insert(self.model).values(**kwargs.get("data"), id=str(uuid.uuid4())).returning(self.model.id)
         result = await session.execute(stmt)
         await session.commit()
         result = result.mappings().first()
@@ -102,18 +103,9 @@ class SQLAlchemyRepository(AbstractRepository):
             result = result.mappings().all()
             return [dict(el) for el in result] if result else []
 
-    @async_sqlalchemy_exceptions
-    async def get_all_contain_fields(self, **kwargs):
-        session = kwargs.get("session")
-        query = select(*[getattr(self.model, field) for field in kwargs.get("data")])
-        for key, value in kwargs.get("field_filter").items():
-            query = query.filter(func.lower(getattr(self.model, key)).contains(value))
-        res = await session.execute(query)
-        res_values = [el._data for el in res.fetchall()]
-        return [AlchemyDataObject(kwargs.get("data"), value) for value in res_values]
 
     @async_sqlalchemy_exceptions
-    async def get_all_by_one_contain_field(self, **kwargs):
+    async def get_all_by_one_contain_field(self, **kwargs) -> Union[list[dict], list]:
         session = kwargs.get("session")
         query = select(*[getattr(self.model, field) for field in kwargs.get("data")])
         if kwargs.get("contain_field"):
@@ -123,7 +115,10 @@ class SQLAlchemyRepository(AbstractRepository):
             for key, value in kwargs.get("field_filter").items():
                 query = query.filter(getattr(self.model, key) == value)
         res = await session.execute(query)
-        res_values = [el._data for el in res.fetchall()]
-        return [AlchemyDataObject(kwargs.get("data"), value) for value in res_values]
+        result = res.mappings().all()
+        return [dict(el) for el in result] if result else []
+
+
+
 
 

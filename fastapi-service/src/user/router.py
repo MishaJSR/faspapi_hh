@@ -1,9 +1,13 @@
+import uuid
+from uuid import uuid4
+
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 from fastapi.responses import JSONResponse
 
 from user.models import user_repository
-from user.schemas import ConstructUser, ResponseAllUsers, UserCreateModel, ResponseDeleteUsers, UserPaginationModel
+from user.schemas import ConstructUser, ResponseAllUsers, ResponseDeleteUsers, UserPaginationModel, \
+    UserCreateResponse
 from database import get_async_session
 
 router = APIRouter(
@@ -12,7 +16,7 @@ router = APIRouter(
 )
 
 
-@router.post("/check_or_create", response_model=UserCreateModel)
+@router.post("/check_or_create", response_model=UserCreateResponse)
 async def get_last_messages(data=Depends(ConstructUser),
                             session=Depends(get_async_session)):
     field_filter = {
@@ -22,11 +26,8 @@ async def get_last_messages(data=Depends(ConstructUser),
                                                   is_one=True)
     if res:
         raise HTTPException(status_code=400, detail="Данный пользователь уже зарегистрирован")
-    try:
-        result = await user_repository.add_object(session=session, data=data.model_dump())
-        return UserCreateModel(id=result, tg_user_id=data.tg_user_id)
-    except:
-        raise HTTPException(status_code=505, detail="Ошибка в работе сервиса")
+    result = await user_repository.add_object(session=session, data=data.model_dump())
+    return UserCreateResponse(**result)
 
 
 

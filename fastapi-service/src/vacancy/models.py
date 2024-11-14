@@ -3,13 +3,13 @@ from datetime import datetime
 from sqlalchemy import (TIMESTAMP, Boolean, Column, Integer, String, UUID)
 
 from database import Base
-from repository.repository import SQLAlchemyRepository
+from repo.repository import SQLAlchemyRepository
 
 
 class Vacancy(Base):
     __tablename__ = "vacancy"
 
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4())
+    id = Column(UUID(as_uuid=True), primary_key=True)
     name = Column(String, nullable=False)
     url = Column(String, nullable=False)
     salary = Column(String, nullable=False)

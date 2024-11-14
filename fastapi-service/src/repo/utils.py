@@ -50,9 +50,3 @@ def async_session_maker_decorator_select(func):
         return await func(self_object, data=data, result_query=res)
 
     return wrapper
-
-
-class AlchemyDataObject:
-    def __init__(self, keys, values):
-        for key, value in zip(keys, values):
-            setattr(self, key, value)

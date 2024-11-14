@@ -4,7 +4,7 @@ import logging
 from grpc_utils.grpc_connection import send_grpc_to_tg
 from workers.utils import send_first_matches_by_sub
 from models.models import vac_repository
-from repository.utils import connection
+from repo_parser.utils import connection
 from models.models import sub_repository
 from workers.utils import hh_pusher_to_db
 from workers.hh.Observer import Observer, Subject, SingletonMeta
@@ -33,8 +33,8 @@ class Reporter(Observer, metaclass=SingletonMeta):
                                                           data=["sub_tag", "is_no_exp", "is_remote", "user_tg_id"])
         if sub_list:
             for sub in sub_list:
-                res = await cls.find_post(session=session, target=sub.sub_tag,
-                                          is_no_exp=sub.is_no_exp, is_remote=sub.is_remote)
+                res = await cls.find_post(session=session, target=sub.get("sub_tag"),
+                                          is_no_exp=sub.get("is_no_exp"), is_remote=sub.get("is_remote"))
                 if res:
                     logging.info(f"Start GRPC sending...")
                     await asyncio.gather(*(send_grpc_to_tg(name=el.name,

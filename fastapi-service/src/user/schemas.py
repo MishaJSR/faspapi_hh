@@ -9,9 +9,8 @@ class ConstructUser(BaseModel):
     is_block_bot: Optional[bool] = False
     is_auth: Optional[bool] = False
 
-class UserCreateModel(BaseModel):
+class UserCreateResponse(BaseModel):
     id: uuid.UUID
-    tg_user_id: str
 
 class UserPaginationModel(BaseModel):
     offset: Optional[int] = None

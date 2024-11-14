@@ -4,13 +4,13 @@ from sqlalchemy import (TIMESTAMP, Boolean, Column, Integer, BigInteger, Foreign
 from sqlalchemy.orm import relationship
 
 from database import Base
-from repository.repository import SQLAlchemyRepository
+from repo_parser.repository import SQLAlchemyRepository
 
 
 class User(Base):
     __tablename__ = "user"
 
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4())
+    id = Column(UUID(as_uuid=True), primary_key=True)
     tg_user_id = Column(String, nullable=False, unique=True)
     is_block_bot: bool = Column(Boolean, default=False, nullable=False)
     registered_at = Column(TIMESTAMP, default=datetime.utcnow)
@@ -25,7 +25,7 @@ class UserRepository(SQLAlchemyRepository):
 class Subscriber(Base):
     __tablename__ = "subscriber"
 
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4())
+    id = Column(UUID(as_uuid=True), primary_key=True)
     sub_tag = Column(String, nullable=False)
     is_no_exp = Column(Boolean, nullable=False)
     is_remote = Column(Boolean, nullable=False)
@@ -41,7 +41,7 @@ class SubscriberRepository(SQLAlchemyRepository):
 class Vacancy(Base):
     __tablename__ = "vacancy"
 
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4())
+    id = Column(UUID(as_uuid=True), primary_key=True)
     name = Column(String, nullable=False)
     url = Column(String, nullable=False)
     salary = Column(String, nullable=False)
