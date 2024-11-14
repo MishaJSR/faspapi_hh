@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import Optional
 
 import pydantic
@@ -20,5 +21,22 @@ class ConstructVacancy(BaseModel):
         if not validators.url(v):
             raise pydantic.ValidationError
         return v
+
+
+class VacPaginationModel(BaseModel):
+    offset: Optional[int] = None
+    limit: Optional[int] = None
+
+
+class ResponseAllVac(BaseModel):
+    id: int
+    name: str
+    url: str
+    salary: str
+    is_no_exp: bool
+    is_remote: bool
+    employer: str
+    location: str
+    is_active: Optional[bool] = True
 
 

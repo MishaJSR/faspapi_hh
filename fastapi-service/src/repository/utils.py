@@ -1,6 +1,7 @@
 import logging
 
 from sqlalchemy import select, desc
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from database import get_async_session
 
@@ -19,7 +20,7 @@ def connection(method):
 
 def async_session_maker_decorator_select(func):
     async def wrapper(self_object, **kwargs):
-        session = kwargs.get("session")
+        session: AsyncSession = kwargs.get("session")
         field_filter = kwargs.get("field_filter")
         order_filter = kwargs.get("order_filter")
         data = kwargs.get("data")

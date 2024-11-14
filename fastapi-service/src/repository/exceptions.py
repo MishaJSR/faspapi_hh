@@ -1,8 +1,8 @@
 import logging
 
 
-class CustomException(AttributeError):
-    def __init__(self, message="Custom exception occurred"):
+class AttributeException(AttributeError):
+    def __init__(self, message="Error in sending kwargs"):
         self.message = message
         super().__init__(self.message)
 
@@ -13,6 +13,6 @@ def async_sqlalchemy_exceptions(func):
             return await func(*args, **kwargs)
         except Exception as e:
             logging.error(e)
-            raise e
+            raise AttributeException()
 
     return wrapper

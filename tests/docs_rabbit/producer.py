@@ -10,7 +10,7 @@ async def main() -> None:
     )
 
     async with connection:
-        routing_key = "from_faddfstapi"
+        routing_key = "from_fastapi"
 
         channel = await connection.channel()
         some_dict = {

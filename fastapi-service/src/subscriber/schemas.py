@@ -1,3 +1,5 @@
+from typing import Optional
+
 from pydantic import BaseModel, conint
 
 
@@ -8,8 +10,17 @@ class ConstructSubscriber(BaseModel):
     user_tg_id: int
 
 
+class SubPaginationModel(BaseModel):
+    offset: Optional[int] = None
+    limit: Optional[int] = None
+
+
+class ResponseUpdateSubs(BaseModel):
+    id: int
+
+
 class ResponseAllSubs(BaseModel):
-    sub_id: int
+    id: int
     sub_tag: str
     is_no_exp: bool
     is_remote: bool

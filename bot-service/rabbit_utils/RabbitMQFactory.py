@@ -43,16 +43,15 @@ class NullDataObject(DefaultDataObject):
 
     async def operation(self):
         logging.info("Error in validation")
-        await asyncio.sleep(0)
 
 
 class FastRMQDataObject:
-    _pydantic_models = {"check_id": (FastApiRabbit, CreateCheckUserData),
-                        "another": (FastApiRabbit2, CreateCheckUserDataAnother), }
+    _pydantic_models = [(FastApiRabbit, CreateCheckUserData),
+                        (FastApiRabbit2, CreateCheckUserDataAnother)]
 
     @classmethod
     def get_custom_object(cls, data):
-        for pyd_model, base_class in cls._pydantic_models.values():
+        for pyd_model, base_class in cls._pydantic_models:
             try:
                 pyd_model.model_validate(obj=data)
             except ValidationError:

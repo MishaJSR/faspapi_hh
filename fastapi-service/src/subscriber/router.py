@@ -4,8 +4,9 @@ from starlette.responses import JSONResponse
 
 from database import get_async_session
 from subscriber.models import sub_repository
-from subscriber.schemas import ConstructSubscriber, ResponseAllSubs
+from subscriber.schemas import ConstructSubscriber, ResponseAllSubs, ResponseUpdateSubs, SubPaginationModel
 from subscriber.utils import send_first_matches_by_vac
+from user.models import user_repository
 
 router = APIRouter(
     prefix="/sub",
@@ -13,48 +14,52 @@ router = APIRouter(
 )
 
 
-@router.post("/subscribe_user")
+@router.post("/subscribe_user", response_model=ResponseUpdateSubs)
 async def subscribe_user(data=Depends(ConstructSubscriber), session: AsyncSession = Depends(get_async_session)):
-    field_filter = {
-        "user_tg_id": data.user_tg_id
-    }
-    res = await sub_repository.get_one_by_fields(session=session, data=["id", "user_tg_id"], field_filter=field_filter)
-    if not res:
-        sub_id = await sub_repository.add_object(session=session, data=data.model_dump())
+    user = await user_repository.get_all_by_fields(session=session, data=["id", "tg_user_id"],
+                                                   field_filter={
+                                                       "tg_user_id": data.user_tg_id
+                                                   },
+                                                   is_one=True)
+    if not user:
+        raise HTTPException(status_code=400, detail="Невозможно открыть подписку, пользователь отсутствует")
+
+    active_sub = await sub_repository.get_all_by_fields(session=session, data=["id", "user_tg_id"],
+                                                        field_filter={
+                                                            "user_tg_id": data.user_tg_id
+                                                        },
+                                                        is_one=True)
+    if not active_sub:
+        sub = await sub_repository.add_object(session=session, data=data.model_dump())
     else:
-        update_filter = {
-            "user_tg_id": data.user_tg_id,
-        }
-        update_data = {
-            "sub_tag": data.sub_tag,
-            "is_no_exp": data.is_no_exp,
-            "is_remote": data.is_remote,
-            "user_tg_id": data.user_tg_id,
-        }
-        sub_id = await sub_repository.update_fields(session=session,
-                                                    update_data=update_data,
-                                                    update_filter=update_filter)
-    if sub_id:
+        sub = await sub_repository.update_fields(session=session,
+                                                 update_data={
+                                                     "sub_tag": data.sub_tag,
+                                                     "is_no_exp": data.is_no_exp,
+                                                     "is_remote": data.is_remote,
+                                                     "user_tg_id": data.user_tg_id,
+                                                 },
+                                                 update_filter={
+                                                     "user_tg_id": data.user_tg_id,
+                                                 },
+                                                 is_one=True)
+    if sub:
         await send_first_matches_by_vac(target=data.sub_tag,
                                         is_no_exp=data.is_no_exp,
                                         is_remote=data.is_remote,
                                         sub_id=data.user_tg_id)
-        return sub_id
+        return ResponseUpdateSubs(**sub)
     else:
         raise HTTPException(status_code=400, detail="Невозможно открыть подписку")
 
 
-@router.get("")
-async def get_all(session: AsyncSession = Depends(get_async_session)) -> list[ResponseAllSubs]:
-    data = ["id", "sub_tag", "is_no_exp", "is_remote", "user_tg_id"]
-    res = await sub_repository.get_all_by_fields(session=session, data=data)
+@router.get("", response_model=list[ResponseAllSubs])
+async def get_all(data=Depends(SubPaginationModel), session: AsyncSession = Depends(get_async_session)) -> list[ResponseAllSubs]:
+    data_load = ["id", "sub_tag", "is_no_exp", "is_remote", "user_tg_id"]
+    res = await sub_repository.get_all_by_fields(session=session, data=data_load,
+                                                 offset=data.offset, limit=data.limit)
     if res:
-        response = [ResponseAllSubs(sub_id=obj.id, sub_tag=obj.sub_tag,
-                                    is_no_exp=obj.is_no_exp,
-                                    is_remote=obj.is_remote,
-                                    user_tg_id=obj.user_tg_id, )
-                    for obj in res]
-        return response
+        return [ResponseAllSubs(**obj) for obj in res]
     else:
         return []
 
