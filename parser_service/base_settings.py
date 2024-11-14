@@ -25,4 +25,4 @@ class Settings(BaseSettings):
 
 
 
-base_settings = Settings(_env_file=".env", _env_file_encoding="utf-8")
+base_settings = Settings(_env_file=".env_dev", _env_file_encoding="utf-8")

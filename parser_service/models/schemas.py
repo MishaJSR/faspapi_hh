@@ -1,3 +1,4 @@
+import uuid
 from typing import Optional
 
 import pydantic
@@ -9,24 +10,24 @@ class ConstructSubscriber(BaseModel):
     sub_tag: str
     is_no_exp: bool
     is_remote: bool
-    user_tg_id: int
+    user_tg_id: str
 
 
 class ResponseAllSubs(BaseModel):
-    sub_id: int
+    sub_id: uuid.UUID
     sub_tag: str
     is_no_exp: bool
     is_remote: bool
-    user_tg_id: int
+    user_tg_id: str
 
 class ConstructUser(BaseModel):
-    tg_user_id: int
+    tg_user_id: str
     is_block_bot: Optional[bool] = False
 
 
 class ResponseAllUsers(BaseModel):
-    user_id: int
-    tg_user_id: int
+    user_id: uuid.UUID
+    tg_user_id: str
     is_block_bot: bool
 
 
