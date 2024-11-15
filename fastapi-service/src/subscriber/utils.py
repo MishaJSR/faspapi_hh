@@ -22,7 +22,7 @@ async def send_first_matches_by_vac(session=None, sub_tag: str = None, is_no_exp
         contain_field=contain_field
     )
     if res:
-        await asyncio.gather(*(send_grpc_to_tg(**el) for el in res))
+        await asyncio.gather(*(send_grpc_to_tg(**el, user_tg_id=user_tg_id) for el in res))
         logging.info(f"send {len(res)} matches for {user_tg_id}")
     else:
         logging.info(f"No matches for {user_tg_id}")
