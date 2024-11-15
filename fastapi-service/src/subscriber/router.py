@@ -5,7 +5,7 @@ from database import get_async_session
 from subscriber.models import sub_repository
 from subscriber.schemas import ConstructSubscriber, ResponseAllSubs, ResponseUpdateSubs, SubPaginationModel, \
     DeleteSubSchema, ResponseDeleteSubSchema
-from subscriber.utils import send_first_matches_by_vac
+from subscriber.utils import send_first_matches_by_vac, add_or_update_sub
 from user.models import user_repository
 
 router = APIRouter(
@@ -16,7 +16,8 @@ router = APIRouter(
 
 @router.post("/subscribe_user", response_model=ResponseUpdateSubs)
 async def subscribe_user(data=Depends(ConstructSubscriber), session: AsyncSession = Depends(get_async_session)):
-    user = await user_repository.get_all_by_fields(session=session, data=["id", "tg_user_id"],
+    user = await user_repository.get_all_by_fields(session=session,
+                                                   data=["id", "tg_user_id"],
                                                    field_filter={
                                                        "tg_user_id": data.user_tg_id
                                                    },
@@ -24,25 +25,14 @@ async def subscribe_user(data=Depends(ConstructSubscriber), session: AsyncSessio
     if not user:
         raise HTTPException(status_code=400, detail="Невозможно открыть подписку, пользователь отсутствует")
 
-    active_sub = await sub_repository.get_all_by_fields(session=session, data=["id", "user_tg_id"],
+    active_sub = await sub_repository.get_all_by_fields(session=session,
+                                                        data=["id", "user_tg_id"],
                                                         field_filter={
                                                             "user_tg_id": data.user_tg_id
                                                         },
                                                         is_one=True)
-    if not active_sub:
-        sub = await sub_repository.add_object(session=session, data=data.model_dump())
-    else:
-        sub = await sub_repository.update_fields(session=session,
-                                                 update_data=data.model_dump(),
-                                                 update_filter={
-                                                     "user_tg_id": data.user_tg_id,
-                                                 },
-                                                 is_one=True)
-    if sub:
-        await send_first_matches_by_vac(**data.model_dump(), session=session)
-        return ResponseUpdateSubs(**sub)
-    else:
-        raise HTTPException(status_code=400, detail="Невозможно открыть подписку")
+    sub = await add_or_update_sub(session=session, data=data.model_dump(), repo=sub_repository, active_sub=active_sub)
+    return ResponseUpdateSubs(**sub)
 
 
 @router.get("", response_model=list[ResponseAllSubs])
