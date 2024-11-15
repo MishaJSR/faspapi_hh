@@ -1,4 +1,3 @@
-import logging
 from typing import AsyncGenerator
 
 from sqlalchemy import MetaData, NullPool

@@ -13,12 +13,13 @@ async def main() -> None:
         routing_key = "from_fastapi"
 
         channel = await connection.channel()
+        queue = await channel.declare_queue(routing_key, durable=True)
         some_dict = {
             "tg_user_id": "fdgf"
         }
         message_body = json.dumps(some_dict)
 
-        await channel.default_exchange.publish(
+        res = await channel.default_exchange.publish(
             aio_pika.Message(body=message_body.encode()),
             routing_key=routing_key,
         )

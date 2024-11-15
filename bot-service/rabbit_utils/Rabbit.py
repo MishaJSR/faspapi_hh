@@ -40,7 +40,7 @@ class Rabbit(metaclass=RabbitSingletonMeta):
             await channel.set_qos(prefetch_count=10)
             tasks = []
             for queue_name in self._queue_list:
-                queue = await channel.declare_queue(queue_name, auto_delete=True)
+                queue = await channel.declare_queue(queue_name, durable=True)
                 task = asyncio.create_task(self.listen_to_queue(queue, queue_name))
                 tasks.append(task)
             await asyncio.gather(*tasks)
